@@ -1,8 +1,33 @@
+"use client"
+
+import { useState } from "react"
 import { Navigation } from "@/components/navigation"
 import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { CubeVisualizer } from "@/components/cube-visualizer"
+import { RotateCcw } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function NotationPage() {
+  const [sequence, setSequence] = useState<string[]>([])
+  const [sequenceId, setSequenceId] = useState(0)
+  const [resetId, setResetId] = useState(0)
+
+  const handleMove = (move: string) => {
+    setSequence([move])
+    setSequenceId(s => s + 1)
+  }
+
+  const handleSequence = (seq: string) => {
+    const moves = seq.split(' ').filter(m => m.length > 0)
+    setSequence(moves)
+    setSequenceId(s => s + 1)
+  }
+
+  const handleReset = () => {
+    setResetId(r => r + 1)
+  }
+
   return (
     <div className="min-h-screen">
       <Navigation />
@@ -23,67 +48,57 @@ export default function NotationPage() {
           </TabsList>
 
           <TabsContent value="3x3" className="mt-6">
-            <div className="grid gap-6">
-              <Card className="p-6">
-                <h2 className="mb-4 text-2xl font-semibold">Basic Face Moves</h2>
+            <div className="grid gap-8 lg:grid-cols-3">
+              <div className="lg:col-span-2 grid gap-6">
+                <Card className="p-6">
+                  <h2 className="mb-4 text-2xl font-semibold">Basic Face Moves</h2>
+                  <p className="mb-4 text-sm text-muted-foreground">Click on any move to visualize it on the cube.</p>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">
-                        R
-                      </code>
+                    <button onClick={() => handleMove('R')} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">R</code>
                       <div>
                         <p className="font-semibold">Right</p>
                         <p className="text-sm text-muted-foreground">Turn the right face 90° clockwise</p>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">
-                        L
-                      </code>
+                    </button>
+                    <button onClick={() => handleMove('L')} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">L</code>
                       <div>
                         <p className="font-semibold">Left</p>
                         <p className="text-sm text-muted-foreground">Turn the left face 90° clockwise</p>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">
-                        U
-                      </code>
+                    </button>
+                    <button onClick={() => handleMove('U')} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">U</code>
                       <div>
                         <p className="font-semibold">Up</p>
                         <p className="text-sm text-muted-foreground">Turn the top face 90° clockwise</p>
                       </div>
-                    </div>
+                    </button>
                   </div>
                   <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">
-                        D
-                      </code>
+                    <button onClick={() => handleMove('D')} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">D</code>
                       <div>
                         <p className="font-semibold">Down</p>
                         <p className="text-sm text-muted-foreground">Turn the bottom face 90° clockwise</p>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">
-                        F
-                      </code>
+                    </button>
+                    <button onClick={() => handleMove('F')} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">F</code>
                       <div>
                         <p className="font-semibold">Front</p>
                         <p className="text-sm text-muted-foreground">Turn the front face 90° clockwise</p>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">
-                        B
-                      </code>
+                    </button>
+                    <button onClick={() => handleMove('B')} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">B</code>
                       <div>
                         <p className="font-semibold">Back</p>
                         <p className="text-sm text-muted-foreground">Turn the back face 90° clockwise</p>
                       </div>
-                    </div>
+                    </button>
                   </div>
                 </div>
               </Card>
@@ -101,13 +116,13 @@ export default function NotationPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-start gap-3">
+                    <button onClick={() => handleMove("R2")} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
                       <code className="rounded bg-secondary px-3 py-1 font-mono text-lg font-bold">R2</code>
                       <div>
                         <p className="font-semibold">Double Turn</p>
                         <p className="text-sm text-muted-foreground">Turn the face 180° (two times)</p>
                       </div>
-                    </div>
+                    </button>
                   </div>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
@@ -161,39 +176,63 @@ export default function NotationPage() {
               <Card className="p-6">
                 <h2 className="mb-4 text-2xl font-semibold">Rotation Moves</h2>
                 <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <code className="rounded bg-muted px-3 py-1 font-mono text-lg font-bold">x</code>
-                    <div>
-                      <p className="font-semibold">X Rotation</p>
-                      <p className="text-sm text-muted-foreground">Rotate entire cube on R axis</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <code className="rounded bg-muted px-3 py-1 font-mono text-lg font-bold">y</code>
-                    <div>
-                      <p className="font-semibold">Y Rotation</p>
-                      <p className="text-sm text-muted-foreground">Rotate entire cube on U axis</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <code className="rounded bg-muted px-3 py-1 font-mono text-lg font-bold">z</code>
-                    <div>
-                      <p className="font-semibold">Z Rotation</p>
-                      <p className="text-sm text-muted-foreground">Rotate entire cube on F axis</p>
-                    </div>
-                  </div>
+                  <button onClick={() => handleMove('x')} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                      <code className="rounded bg-muted px-3 py-1 font-mono text-lg font-bold">x</code>
+                      <div>
+                        <p className="font-semibold">X Rotation</p>
+                        <p className="text-sm text-muted-foreground">Rotate entire cube on R axis</p>
+                      </div>
+                    </button>
+                  <button onClick={() => handleMove('y')} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                      <code className="rounded bg-muted px-3 py-1 font-mono text-lg font-bold">y</code>
+                      <div>
+                        <p className="font-semibold">Y Rotation</p>
+                        <p className="text-sm text-muted-foreground">Rotate entire cube on U axis</p>
+                      </div>
+                    </button>
+                  <button onClick={() => handleMove('z')} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                      <code className="rounded bg-muted px-3 py-1 font-mono text-lg font-bold">z</code>
+                      <div>
+                        <p className="font-semibold">Z Rotation</p>
+                        <p className="text-sm text-muted-foreground">Rotate entire cube on F axis</p>
+                      </div>
+                    </button>
                 </div>
               </Card>
 
               <Card className="p-6 bg-secondary/50">
                 <h3 className="mb-3 text-lg font-semibold">Example Algorithm</h3>
-                <code className="mb-2 block rounded bg-background px-4 py-3 font-mono text-lg">
-                  R U R' U' R' F R2 U' R' U' R U R' F'
-                </code>
-                <p className="text-sm text-muted-foreground">
-                  This reads as: Right clockwise, Up clockwise, Right counter-clockwise, Up counter-clockwise...
-                </p>
-              </Card>
+                  <button
+                    onClick={() => handleSequence("R U R' U' R' F R2 U' R' U' R U R' F'")}
+                    className="w-full text-left group"
+                  >
+                    <code className="mb-2 block rounded bg-background px-4 py-3 font-mono text-lg group-hover:bg-primary/10 transition-colors">
+                      R U R' U' R' F R2 U' R' U' R U R' F'
+                    </code>
+                    <p className="text-sm text-muted-foreground">
+                      Click to animate this algorithm (T-Perm)
+                    </p>
+                  </button>
+                </Card>
+              </div>
+
+              {/* Sticky Sidebar for Cube Visualizer */}
+              <div className="lg:col-span-1">
+                <div className="sticky top-6">
+                  <Card className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold">Interactive Viewer</h3>
+                      <Button variant="outline" size="icon" onClick={handleReset} title="Reset Cube">
+                        <RotateCcw className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <CubeVisualizer sequence={sequence} sequenceId={sequenceId} resetId={resetId} />
+                    <p className="mt-4 text-sm text-muted-foreground text-center">
+                      Drag to rotate camera. Click moves on the left to animate.
+                    </p>
+                  </Card>
+                </div>
+              </div>
             </div>
           </TabsContent>
 
@@ -207,33 +246,27 @@ export default function NotationPage() {
                 </p>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">
-                        R
-                      </code>
+                    <button onClick={() => handleMove('R')} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">R</code>
                       <div>
                         <p className="font-semibold">Right</p>
                         <p className="text-sm text-muted-foreground">Turn the right face 90° clockwise</p>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">
-                        U
-                      </code>
+                    </button>
+                    <button onClick={() => handleMove('U')} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">U</code>
                       <div>
                         <p className="font-semibold">Up</p>
                         <p className="text-sm text-muted-foreground">Turn the top face 90° clockwise</p>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">
-                        F
-                      </code>
+                    </button>
+                    <button onClick={() => handleMove('F')} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">F</code>
                       <div>
                         <p className="font-semibold">Front</p>
                         <p className="text-sm text-muted-foreground">Turn the front face 90° clockwise</p>
                       </div>
-                    </div>
+                    </button>
                   </div>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
@@ -275,42 +308,34 @@ export default function NotationPage() {
                 </p>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">
-                        U
-                      </code>
+                    <button onClick={() => handleMove('U')} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">U</code>
                       <div>
                         <p className="font-semibold">Upper Face</p>
                         <p className="text-sm text-muted-foreground">Turn the top face clockwise</p>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">
-                        R
-                      </code>
+                    </button>
+                    <button onClick={() => handleMove('R')} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">R</code>
                       <div>
                         <p className="font-semibold">Right Face</p>
                         <p className="text-sm text-muted-foreground">Turn the right face clockwise</p>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">
-                        L
-                      </code>
+                    </button>
+                    <button onClick={() => handleMove('L')} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">L</code>
                       <div>
                         <p className="font-semibold">Left Face</p>
                         <p className="text-sm text-muted-foreground">Turn the left face clockwise</p>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">
-                        B
-                      </code>
+                    </button>
+                    <button onClick={() => handleMove('B')} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                      <code className="rounded bg-primary px-3 py-1 font-mono text-lg font-bold text-primary-foreground">B</code>
                       <div>
                         <p className="font-semibold">Back Face</p>
                         <p className="text-sm text-muted-foreground">Turn the back face clockwise</p>
                       </div>
-                    </div>
+                    </button>
                   </div>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
