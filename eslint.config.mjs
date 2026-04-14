@@ -1,0 +1,8 @@
+import eslint from "@eslint/js";
+
+export default [
+  eslint.configs.recommended,
+  {
+    ignores: [".next/**", "node_modules/**"]
+  }
+];
