@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
 import { Navigation } from "@/components/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -17,13 +18,27 @@ interface AlgoProgress {
   [algoId: string]: "learning" | "learned"
 }
 
-export default function AlgorithmsPage() {
+function AlgorithmsContent() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  const defaultCube = (searchParams.get("cube") as CubeType) || "3x3"
+  const defaultMethod = (searchParams.get("method") as MethodType) || "Beginners"
+
   const [copiedId, setCopiedId] = useState<string | null>(null)
-  const [selectedCube, setSelectedCube] = useState<CubeType>("3x3")
-  const [selectedMethod, setSelectedMethod] = useState<MethodType>("CFOP")
+  const [selectedCube, setSelectedCube] = useState<CubeType>(defaultCube)
+  const [selectedMethod, setSelectedMethod] = useState<MethodType>(defaultMethod)
   const [user] = useAuthState(auth)
   const [algoProgress, setAlgoProgress] = useState<AlgoProgress>({})
   const [favorites, setFavorites] = useState<Set<string>>(new Set())
+
+  // Update URL when cube or method changes
+  useEffect(() => {
+    const params = new URLSearchParams()
+    params.set("cube", selectedCube)
+    params.set("method", selectedMethod)
+    router.replace(`?${params.toString()}`)
+  }, [selectedCube, selectedMethod, router])
 
   useEffect(() => {
     if (user) {
@@ -80,8 +95,8 @@ export default function AlgorithmsPage() {
     }
   }
 
-  const cubeTypes: CubeType[] = ["2x2", "3x3", "pyraminx"]
-  const methods: MethodType[] = ["Beginners", "CFOP"]
+  const cubeTypes = Array.from(new Set(algorithms.map(a => a.cubeType))) as CubeType[]
+  const methods = Array.from(new Set(algorithms.map(a => a.method))) as MethodType[]
 
   const filteredAlgorithms = algorithms.filter(
     (algo) => algo.cubeType === selectedCube && algo.method === selectedMethod,
@@ -205,5 +220,13 @@ export default function AlgorithmsPage() {
         )}
       </main>
     </div>
+  )
+}
+
+export default function AlgorithmsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen"><Navigation /><main className="mx-auto max-w-7xl px-6 py-12"><div className="mb-12"><h1 className="mb-4 text-balance text-4xl font-bold">Algorithm Library</h1><p className="text-pretty text-lg text-muted-foreground">Loading algorithms...</p></div></main></div>}>
+      <AlgorithmsContent />
+    </Suspense>
   )
 }

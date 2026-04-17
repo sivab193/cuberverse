@@ -23,9 +23,9 @@ export function Navigation() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-            <span className="font-mono text-xl font-bold text-primary-foreground">SC</span>
+            <img src="/logo.png" alt="CuberVerse Logo" className="w-full h-full object-cover" />
           </div>
-          <span className="text-xl font-bold">Cuberverse</span>
+          <span className="text-xl font-bold">CuberVerse</span>
         </Link>
 
         <div className="flex items-center gap-6">
