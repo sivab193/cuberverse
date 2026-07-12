@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Timer, BookOpen, TrendingUp, Zap, ScanLine } from "lucide-react"
+import { Timer, BookOpen, TrendingUp, Zap, ScanLine, Trophy } from "lucide-react"
 import { Navigation } from "@/components/navigation"
 import { algorithms } from "@/lib/algorithms"
 
@@ -97,6 +97,20 @@ export default function HomePage() {
             <h3 className="mb-2 text-lg font-semibold">Multiple Methods</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
               From beginner-friendly layer-by-layer to CFOP. Find the method that works best for you.
+            </p>
+          </Card>
+
+          <Card className="p-6">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-chart-2/10">
+              <Trophy className="h-6 w-6 text-chart-2" />
+            </div>
+            <h3 className="mb-2 text-lg font-semibold">WCA Integration</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Link your WCA account to see your official records, and find{" "}
+              <Link href="/competitions" className="text-primary underline-offset-2 hover:underline">
+                upcoming competitions
+              </Link>{" "}
+              near you.
             </p>
           </Card>
         </div>

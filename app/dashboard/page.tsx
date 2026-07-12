@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Trophy, Clock, TrendingUp, BookOpen } from "lucide-react"
+import { WcaProfileCard } from "@/components/wca-profile-card"
 
 interface Solve {
   time: number
@@ -153,6 +154,10 @@ export default function DashboardPage() {
             </div>
             <div className="font-mono text-3xl font-bold">{learnedCount}</div>
           </Card>
+        </div>
+
+        <div className="mb-8">
+          <WcaProfileCard uid={user.uid} />
         </div>
 
         <Tabs defaultValue="solves">

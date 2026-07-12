@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { User, Timer, BookOpen, LogIn, LogOut, TrendingUp, Book, ScanLine } from "lucide-react"
+import { User, Timer, BookOpen, LogIn, LogOut, TrendingUp, Book, ScanLine, Trophy } from "lucide-react"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth } from "@/lib/firebase"
 import { signOut } from "firebase/auth"
@@ -57,6 +57,13 @@ export function Navigation() {
           >
             <ScanLine className="h-4 w-4" />
             Solver
+          </Link>
+          <Link
+            href="/competitions"
+            className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Trophy className="h-4 w-4" />
+            Competitions
           </Link>
           {user && (
             <>
