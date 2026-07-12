@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { generateScramble, scrambleToString } from "@/lib/scramble"
+import { parseSequence } from "@/lib/puzzle/notation"
+import type { PuzzleId } from "@/lib/puzzle/types"
 
 const AXIS: Record<string, string> = { R: "x", L: "x", U: "y", D: "y", F: "z", B: "z" }
 
@@ -63,6 +65,24 @@ describe("generateScramble", () => {
     const pyraminx = generateScramble("pyraminx")
     expect(pyraminx.filter((m) => /^[ULRB]/.test(m))).toHaveLength(9)
     expect(generateScramble("unknown-type")).toHaveLength(20)
+  })
+
+  it("big-cube scrambles use wide moves and parse in our notation", () => {
+    const cases: [string, PuzzleId, RegExp][] = [
+      ["4x4", "444", /^(3)?[RLUDFB]w?(2|')?$/],
+      ["5x5", "555", /^(3)?[RLUDFB]w?(2|')?$/],
+      ["6x6", "666", /^(3)?[RLUDFB]w?(2|')?$/],
+      ["7x7", "777", /^(3)?[RLUDFB]w?(2|')?$/],
+    ]
+    for (const [cubeType, puzzleId, pattern] of cases) {
+      for (let i = 0; i < 20; i++) {
+        const scramble = generateScramble(cubeType)
+        for (const move of scramble) {
+          expect(move, `${cubeType}: ${move}`).toMatch(pattern)
+        }
+        expect(() => parseSequence(scrambleToString(scramble), puzzleId)).not.toThrow()
+      }
+    }
   })
 })
 

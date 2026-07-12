@@ -5,6 +5,7 @@ import { Navigation } from "@/components/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { generateScramble, scrambleToString } from "@/lib/scramble"
+import { loadCubingScramble } from "@/lib/solver/cubing-loader"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth, db } from "@/lib/firebase"
 import { collection, addDoc, Timestamp, query, where, getDocs, deleteDoc, doc } from "firebase/firestore"
@@ -24,6 +25,30 @@ import {
 
 type TimerState = "idle" | "ready" | "running" | "stopped"
 
+const CUBE_TYPES = ["2x2", "3x3", "4x4", "5x5", "6x6", "7x7", "pyraminx"] as const
+
+/** WCA event ids for cubing.js random-state scrambles. */
+const EVENT_IDS: Record<string, string> = {
+  "2x2": "222",
+  "3x3": "333",
+  "4x4": "444",
+  "5x5": "555",
+  "6x6": "666",
+  "7x7": "777",
+  pyraminx: "pyram",
+}
+
+/** WCA random-state scramble, falling back to local random moves offline. */
+async function fetchScramble(cubeType: string): Promise<string> {
+  try {
+    const { randomScrambleForEvent } = await loadCubingScramble()
+    const alg = await randomScrambleForEvent(EVENT_IDS[cubeType] ?? "333")
+    return alg.toString()
+  } catch {
+    return scrambleToString(generateScramble(cubeType))
+  }
+}
+
 export default function TimerPage() {
   const [user] = useAuthState(auth)
   const [scramble, setScramble] = useState<string>("")
@@ -33,11 +58,20 @@ export default function TimerPage() {
   const [times, setTimes] = useState<number[]>([])
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const startTimeRef = useRef<number>(0)
+  // Prefetched scramble so the next one appears instantly after a solve.
+  const prefetchRef = useRef<{ cubeType: string; promise: Promise<string> } | null>(null)
+  const scrambleSeq = useRef(0)
 
   const newScramble = useCallback(() => {
-    const scrambleLength = cubeType === "2x2" ? 11 : cubeType === "pyraminx" ? 9 : 20
-    const newScrambleArray = generateScramble(cubeType, scrambleLength)
-    setScramble(scrambleToString(newScrambleArray))
+    const seq = ++scrambleSeq.current
+    setScramble("")
+    const prefetched = prefetchRef.current
+    const promise =
+      prefetched && prefetched.cubeType === cubeType ? prefetched.promise : fetchScramble(cubeType)
+    prefetchRef.current = { cubeType, promise: fetchScramble(cubeType) }
+    void promise.then((next) => {
+      if (seq === scrambleSeq.current) setScramble(next)
+    })
   }, [cubeType])
 
   useEffect(() => {
@@ -188,9 +222,11 @@ export default function TimerPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="2x2">2x2</SelectItem>
-                    <SelectItem value="3x3">3x3</SelectItem>
-                    <SelectItem value="pyraminx">Pyraminx</SelectItem>
+                    {CUBE_TYPES.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type === "pyraminx" ? "Pyraminx" : type}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
 
@@ -201,7 +237,9 @@ export default function TimerPage() {
 
               {/* Scramble Display */}
               <div className="mb-12 rounded-lg bg-secondary p-6 text-center">
-                <p className="text-lg font-mono leading-relaxed">{scramble}</p>
+                <p className="text-lg font-mono leading-relaxed">
+                  {scramble || <span className="text-muted-foreground">Generating scramble…</span>}
+                </p>
               </div>
 
               {/* Timer Display */}

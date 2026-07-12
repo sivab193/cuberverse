@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Timer, BookOpen, TrendingUp, Zap } from "lucide-react"
+import { Timer, BookOpen, TrendingUp, Zap, ScanLine } from "lucide-react"
 import { Navigation } from "@/components/navigation"
 import { algorithms } from "@/lib/algorithms"
 
@@ -45,7 +45,21 @@ export default function HomePage() {
         </div>
 
         {/* Features Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Card className="p-6">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+              <ScanLine className="h-6 w-6 text-primary" />
+            </div>
+            <h3 className="mb-2 text-lg font-semibold">Scan &amp; Solve</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Show your scrambled cube to the camera and watch a shortest-path solution play out
+              on a 3D puzzle.{" "}
+              <Link href="/solve" className="text-primary underline-offset-2 hover:underline">
+                Try it →
+              </Link>
+            </p>
+          </Card>
+
           <Card className="p-6">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
               <Timer className="h-6 w-6 text-primary" />
