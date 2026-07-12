@@ -5,7 +5,7 @@ import { PUZZLES, type ParsedMove, type PuzzleId } from "./types"
 
 export * from "./types"
 export * from "./notation"
-export { NxnCube } from "./nxn"
+export { NxnCube, FACE_FRAMES, FAMILY_FACE, ROTATIONS, type Vec } from "./nxn"
 export { PyraminxPuzzle } from "./pyraminx"
 
 /** Common interface over all puzzle models. */

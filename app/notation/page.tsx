@@ -1,31 +1,26 @@
 "use client"
 
-import { useState } from "react"
 import { Navigation } from "@/components/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { CubeVisualizer } from "@/components/cube-visualizer"
+import { LazyPuzzleViewer } from "@/components/puzzle-viewer/lazy"
+import { usePuzzleController } from "@/components/puzzle-viewer/use-puzzle-controller"
 import { RotateCcw } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function NotationPage() {
-  const [sequence, setSequence] = useState<string[]>([])
-  const [sequenceId, setSequenceId] = useState(0)
-  const [resetId, setResetId] = useState(0)
+  const controller = usePuzzleController("333")
 
   const handleMove = (move: string) => {
-    setSequence([move])
-    setSequenceId(s => s + 1)
+    controller.applyMoves(move)
   }
 
   const handleSequence = (seq: string) => {
-    const moves = seq.split(' ').filter(m => m.length > 0)
-    setSequence(moves)
-    setSequenceId(s => s + 1)
+    controller.applyMoves(seq)
   }
 
   const handleReset = () => {
-    setResetId(r => r + 1)
+    controller.resetAll()
   }
 
   return (
@@ -107,7 +102,7 @@ export default function NotationPage() {
                 <h2 className="mb-4 text-2xl font-semibold">Move Modifiers</h2>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-3">
-                    <div className="flex items-start gap-3">
+                    <button onClick={() => handleMove("R'")} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
                       <code className="rounded bg-secondary px-3 py-1 font-mono text-lg font-bold">R'</code>
                       <div>
                         <p className="font-semibold">Prime (Apostrophe)</p>
@@ -115,7 +110,7 @@ export default function NotationPage() {
                           Means counter-clockwise. Turn 90° in the opposite direction
                         </p>
                       </div>
-                    </div>
+                    </button>
                     <button onClick={() => handleMove("R2")} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
                       <code className="rounded bg-secondary px-3 py-1 font-mono text-lg font-bold">R2</code>
                       <div>
@@ -125,13 +120,13 @@ export default function NotationPage() {
                     </button>
                   </div>
                   <div className="space-y-3">
-                    <div className="flex items-start gap-3">
+                    <button onClick={() => handleMove("r")} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
                       <code className="rounded bg-secondary px-3 py-1 font-mono text-lg font-bold">r</code>
                       <div>
                         <p className="font-semibold">Wide Turn (lowercase)</p>
                         <p className="text-sm text-muted-foreground">Turn two layers at once</p>
                       </div>
-                    </div>
+                    </button>
                   </div>
                 </div>
               </Card>
@@ -140,7 +135,7 @@ export default function NotationPage() {
                 <h2 className="mb-4 text-2xl font-semibold">Middle & Slice Moves</h2>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-3">
-                    <div className="flex items-start gap-3">
+                    <button onClick={() => handleMove("M")} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
                       <code className="rounded bg-accent px-3 py-1 font-mono text-lg font-bold">M</code>
                       <div>
                         <p className="font-semibold">Middle</p>
@@ -148,8 +143,8 @@ export default function NotationPage() {
                           Middle layer between L and R (turns in direction of L)
                         </p>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
+                    </button>
+                    <button onClick={() => handleMove("E")} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
                       <code className="rounded bg-accent px-3 py-1 font-mono text-lg font-bold">E</code>
                       <div>
                         <p className="font-semibold">Equatorial</p>
@@ -157,10 +152,10 @@ export default function NotationPage() {
                           Middle layer between U and D (turns in direction of D)
                         </p>
                       </div>
-                    </div>
+                    </button>
                   </div>
                   <div className="space-y-3">
-                    <div className="flex items-start gap-3">
+                    <button onClick={() => handleMove("S")} className="w-full text-left flex items-start gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
                       <code className="rounded bg-accent px-3 py-1 font-mono text-lg font-bold">S</code>
                       <div>
                         <p className="font-semibold">Standing</p>
@@ -168,7 +163,7 @@ export default function NotationPage() {
                           Middle layer between F and B (turns in direction of F)
                         </p>
                       </div>
-                    </div>
+                    </button>
                   </div>
                 </div>
               </Card>
@@ -226,7 +221,7 @@ export default function NotationPage() {
                         <RotateCcw className="h-4 w-4" />
                       </Button>
                     </div>
-                    <CubeVisualizer sequence={sequence} sequenceId={sequenceId} resetId={resetId} />
+                    <LazyPuzzleViewer controller={controller} />
                     <p className="mt-4 text-sm text-muted-foreground text-center">
                       Drag to rotate camera. Click moves on the left to animate.
                     </p>

@@ -14,7 +14,7 @@ import { FACE_ORDER, type Face, type ParsedMove } from "./types"
  * `toFaceletString()` on a 3x3 is directly usable with standard solvers.
  */
 
-type Vec = readonly [number, number, number]
+export type Vec = readonly [number, number, number]
 
 interface FaceFrame {
   normal: Vec
@@ -22,7 +22,7 @@ interface FaceFrame {
   colDir: Vec
 }
 
-const FACE_FRAMES: Record<Face, FaceFrame> = {
+export const FACE_FRAMES: Record<Face, FaceFrame> = {
   U: { normal: [0, 1, 0], rowDir: [0, 0, 1], colDir: [1, 0, 0] },
   D: { normal: [0, -1, 0], rowDir: [0, 0, -1], colDir: [1, 0, 0] },
   F: { normal: [0, 0, 1], rowDir: [0, -1, 0], colDir: [1, 0, 0] },
@@ -32,7 +32,7 @@ const FACE_FRAMES: Record<Face, FaceFrame> = {
 }
 
 /** One clockwise quarter turn viewed from outside the given face. */
-const ROTATIONS: Record<Face, (p: Vec) => Vec> = {
+export const ROTATIONS: Record<Face, (p: Vec) => Vec> = {
   R: ([x, y, z]) => [x, z, -y],
   L: ([x, y, z]) => [x, -z, y],
   U: ([x, y, z]) => [-z, y, x],
@@ -42,7 +42,7 @@ const ROTATIONS: Record<Face, (p: Vec) => Vec> = {
 }
 
 /** Face whose rotation direction each move family follows. */
-const FAMILY_FACE: Record<string, Face> = {
+export const FAMILY_FACE: Record<string, Face> = {
   U: "U",
   R: "R",
   F: "F",
