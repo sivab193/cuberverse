@@ -23,6 +23,9 @@ yarn-error.log*
 .env*
 !.env.example
 
+# generated at dev/build time by scripts/vendor-cubing.mjs
+/public/vendor/
+
 # vercel
 .vercel
 

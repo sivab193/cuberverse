@@ -3,7 +3,16 @@ import nextTypescript from "eslint-config-next/typescript"
 
 const config = [
   {
-    ignores: [".next/**", "node_modules/**", "next-env.d.ts"],
+    ignores: [
+      ".next/**",
+      "node_modules/**",
+      "next-env.d.ts",
+      // Generated at dev/build time (vendored cubing ESM, mapping tables).
+      "public/vendor/**",
+      "lib/solver/kpattern-tables.gen.ts",
+      // Offline generator scripts, not part of the app build.
+      ".gen/**",
+    ],
   },
   ...nextCoreWebVitals,
   ...nextTypescript,

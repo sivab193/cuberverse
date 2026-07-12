@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { User, Timer, BookOpen, LogIn, LogOut, TrendingUp, Book } from "lucide-react"
+import { User, Timer, BookOpen, LogIn, LogOut, TrendingUp, Book, ScanLine } from "lucide-react"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth } from "@/lib/firebase"
 import { signOut } from "firebase/auth"
@@ -50,6 +50,13 @@ export function Navigation() {
           >
             <Book className="h-4 w-4" />
             Notation
+          </Link>
+          <Link
+            href="/solve"
+            className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ScanLine className="h-4 w-4" />
+            Solver
           </Link>
           {user && (
             <>
