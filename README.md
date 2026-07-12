@@ -1,30 +1,45 @@
-# Speed cubing website
+# CuberVerse
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+Your complete speed cubing companion — practice with a timer, learn algorithms, master notation, and track your progress.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/sivaganeshs-projects/v0-speed-cubing-website)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/qLqRLCZn3N4)
+## Features
 
-## Overview
+- **Timer** — hold-space-to-start timer with auto-generated scrambles for 2x2, 3x3, and Pyraminx, plus Ao5/Ao12 session stats.
+- **Algorithm Library** — browse algorithms by cube type and method (Beginners, CFOP), copy them, and mark your learning progress.
+- **Notation Guide** — interactive guide with a 3D cube that animates each move as you click it.
+- **Stats & Dashboard** — solve history, progression charts, distributions, and per-algorithm progress (requires an account).
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+## Stack
 
-## Deployment
+- [Next.js](https://nextjs.org/) (App Router) + React 19 + TypeScript
+- [Tailwind CSS v4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
+- [three.js](https://threejs.org/) via [react-three-fiber](https://docs.pmnd.rs/react-three-fiber) for the 3D cube
+- [Firebase](https://firebase.google.com/) (Auth + Firestore) for accounts, solves, and progress
+- [Vitest](https://vitest.dev/) for unit tests
 
-Your project is live at:
+## Getting started
 
-**[https://vercel.com/sivaganeshs-projects/v0-speed-cubing-website](https://vercel.com/sivaganeshs-projects/v0-speed-cubing-website)**
+This project uses [pnpm](https://pnpm.io/) (via corepack — bundled with Node.js):
 
-## Build your app
+```bash
+corepack enable pnpm
+pnpm install
+pnpm dev
+```
 
-Continue building your app on:
+Open http://localhost:3000.
 
-**[https://v0.app/chat/qLqRLCZn3N4](https://v0.app/chat/qLqRLCZn3N4)**
+### Firebase (optional)
 
-## How It Works
+Accounts, solve history, and algorithm progress need a Firebase project. Copy `.env.example` to `.env.local` and fill in the values from Firebase Console → Project settings → Your apps. Without them the site still runs — the account features are simply disabled.
 
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+## Scripts
+
+| Command | Description |
+|---|---|
+| `pnpm dev` | Start the dev server |
+| `pnpm build` | Production build |
+| `pnpm start` | Serve the production build |
+| `pnpm lint` | ESLint |
+| `pnpm test` | Run unit tests once |
+| `pnpm test:watch` | Run unit tests in watch mode |

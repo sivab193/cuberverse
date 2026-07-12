@@ -1,12 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Navigation } from "@/components/navigation"
 import { Card } from "@/components/ui/card"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth, db } from "@/lib/firebase"
-import { collection, query, where, orderBy, getDocs } from "firebase/firestore"
+import { collection, query, where, orderBy, getDocs, Timestamp } from "firebase/firestore"
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TrendingDown, TrendingUp, Activity, Award } from "lucide-react"
@@ -14,7 +14,7 @@ import { TrendingDown, TrendingUp, Activity, Award } from "lucide-react"
 interface Solve {
   time: number
   cubeType: string
-  timestamp: any
+  timestamp: Timestamp
 }
 
 export default function StatsPage() {
@@ -29,13 +29,7 @@ export default function StatsPage() {
     }
   }, [user, loading, router])
 
-  useEffect(() => {
-    if (user) {
-      fetchSolves()
-    }
-  }, [user])
-
-  const fetchSolves = async () => {
+  const fetchSolves = useCallback(async () => {
     if (!user) return
 
     try {
@@ -46,7 +40,13 @@ export default function StatsPage() {
     } catch (error) {
       console.error("Error fetching solves:", error)
     }
-  }
+  }, [user])
+
+  useEffect(() => {
+    if (user) {
+      fetchSolves()
+    }
+  }, [user, fetchSolves])
 
   const formatTime = (ms: number): string => {
     const totalSeconds = Math.floor(ms / 1000)
@@ -59,6 +59,8 @@ export default function StatsPage() {
     }
     return `${seconds}.${milliseconds.toString().padStart(2, "0")}`
   }
+
+  const cubeTypes = Array.from(new Set(solves.map((solve) => solve.cubeType))).sort()
 
   const filteredSolves = selectedCube === "all" ? solves : solves.filter((solve) => solve.cubeType === selectedCube)
 
@@ -138,7 +140,7 @@ export default function StatsPage() {
           >
             All Cubes
           </button>
-          {["2x2", "3x3", "4x4", "5x5"].map((cube) => (
+          {cubeTypes.map((cube) => (
             <button
               key={cube}
               onClick={() => setSelectedCube(cube)}

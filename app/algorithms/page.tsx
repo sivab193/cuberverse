@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect, useCallback, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Navigation } from "@/components/navigation"
 import { Card } from "@/components/ui/card"
@@ -12,7 +12,6 @@ import { Copy, Check, Star, StarOff } from "lucide-react"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth, db } from "@/lib/firebase"
 import { doc, setDoc, getDoc } from "firebase/firestore"
-import { CubeVisualization } from "@/components/cube-visualization"
 
 interface AlgoProgress {
   [algoId: string]: "learning" | "learned"
@@ -40,14 +39,7 @@ function AlgorithmsContent() {
     router.replace(`?${params.toString()}`)
   }, [selectedCube, selectedMethod, router])
 
-  useEffect(() => {
-    if (user) {
-      fetchAlgoProgress()
-      fetchFavorites()
-    }
-  }, [user])
-
-  const fetchAlgoProgress = async () => {
+  const fetchAlgoProgress = useCallback(async () => {
     if (!user) return
 
     try {
@@ -60,9 +52,9 @@ function AlgorithmsContent() {
     } catch (error) {
       console.error("Error fetching algo progress:", error)
     }
-  }
+  }, [user])
 
-  const fetchFavorites = async () => {
+  const fetchFavorites = useCallback(async () => {
     if (!user) return
 
     try {
@@ -75,7 +67,14 @@ function AlgorithmsContent() {
     } catch (error) {
       console.error("Error fetching favorites:", error)
     }
-  }
+  }, [user])
+
+  useEffect(() => {
+    if (user) {
+      fetchAlgoProgress()
+      fetchFavorites()
+    }
+  }, [user, fetchAlgoProgress, fetchFavorites])
 
   const toggleFavorite = async (algoId: string) => {
     if (!user) return
@@ -199,8 +198,6 @@ function AlgorithmsContent() {
                           </Button>
                         </div>
                       </div>
-
-                      {algo.cubeType === "3x3" && <CubeVisualization algorithm={algo.algorithm} />}
 
                       <div className="mb-3 rounded-lg bg-secondary p-4 font-mono text-sm">{algo.algorithm}</div>
 

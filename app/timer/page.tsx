@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { Navigation } from "@/components/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -34,9 +34,76 @@ export default function TimerPage() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const startTimeRef = useRef<number>(0)
 
+  const newScramble = useCallback(() => {
+    const scrambleLength = cubeType === "2x2" ? 11 : cubeType === "pyraminx" ? 9 : 20
+    const newScrambleArray = generateScramble(cubeType, scrambleLength)
+    setScramble(scrambleToString(newScrambleArray))
+  }, [cubeType])
+
   useEffect(() => {
     newScramble()
-  }, [cubeType])
+  }, [newScramble])
+
+  const saveTime = useCallback(
+    async (timeMs: number) => {
+      try {
+        await addDoc(collection(db, "solves"), {
+          userId: user?.uid,
+          time: timeMs,
+          cubeType,
+          scramble,
+          timestamp: Timestamp.now(),
+        })
+      } catch (error) {
+        console.error("Error saving time:", error)
+      }
+    },
+    [user, cubeType, scramble],
+  )
+
+  const startTimer = useCallback(() => {
+    setTimerState("running")
+    startTimeRef.current = Date.now()
+    setTime(0)
+
+    intervalRef.current = setInterval(() => {
+      setTime(Date.now() - startTimeRef.current)
+    }, 10)
+  }, [])
+
+  const stopTimer = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+    setTimerState("stopped")
+
+    const finalTime = Date.now() - startTimeRef.current
+    setTimes((prev) => [...prev, finalTime])
+
+    // Save to Firebase if user is logged in
+    if (user) {
+      saveTime(finalTime)
+    }
+
+    setTimeout(() => {
+      newScramble()
+    }, 100)
+  }, [user, saveTime, newScramble])
+
+  const handleSpacePress = useCallback(() => {
+    if (timerState === "idle" || timerState === "stopped") {
+      setTimerState("ready")
+    } else if (timerState === "running") {
+      stopTimer()
+    }
+  }, [timerState, stopTimer])
+
+  const handleSpaceRelease = useCallback(() => {
+    if (timerState === "ready") {
+      startTimer()
+    }
+  }, [timerState, startTimer])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -60,71 +127,7 @@ export default function TimerPage() {
       window.removeEventListener("keydown", handleKeyDown)
       window.removeEventListener("keyup", handleKeyUp)
     }
-  }, [timerState])
-
-  const newScramble = () => {
-    const scrambleLength = cubeType === "2x2" ? 11 : 20
-    const newScrambleArray = generateScramble(cubeType, scrambleLength)
-    setScramble(scrambleToString(newScrambleArray))
-  }
-
-  const handleSpacePress = () => {
-    if (timerState === "idle" || timerState === "stopped") {
-      setTimerState("ready")
-    } else if (timerState === "running") {
-      stopTimer()
-    }
-  }
-
-  const handleSpaceRelease = () => {
-    if (timerState === "ready") {
-      startTimer()
-    }
-  }
-
-  const startTimer = () => {
-    setTimerState("running")
-    startTimeRef.current = Date.now()
-    setTime(0)
-
-    intervalRef.current = setInterval(() => {
-      setTime(Date.now() - startTimeRef.current)
-    }, 10)
-  }
-
-  const stopTimer = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current)
-      intervalRef.current = null
-    }
-    setTimerState("stopped")
-
-    const finalTime = Date.now() - startTimeRef.current
-    setTimes([...times, finalTime])
-
-    // Save to Firebase if user is logged in
-    if (user) {
-      saveTime(finalTime)
-    }
-
-    setTimeout(() => {
-      newScramble()
-    }, 100)
-  }
-
-  const saveTime = async (timeMs: number) => {
-    try {
-      await addDoc(collection(db, "solves"), {
-        userId: user?.uid,
-        time: timeMs,
-        cubeType,
-        scramble,
-        timestamp: Timestamp.now(),
-      })
-    } catch (error) {
-      console.error("Error saving time:", error)
-    }
-  }
+  }, [handleSpacePress, handleSpaceRelease])
 
   const clearAllSolves = async () => {
     // Clear local state

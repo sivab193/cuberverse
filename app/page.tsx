@@ -3,8 +3,13 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Timer, BookOpen, TrendingUp, Zap } from "lucide-react"
 import { Navigation } from "@/components/navigation"
+import { algorithms } from "@/lib/algorithms"
 
 export default function HomePage() {
+  const algorithmCount = algorithms.length
+  const cubeTypeCount = new Set(algorithms.map((algo) => algo.cubeType)).size
+  const methodCount = new Set(algorithms.map((algo) => algo.method)).size
+
   return (
     <div className="min-h-screen">
       <Navigation />
@@ -77,7 +82,7 @@ export default function HomePage() {
             </div>
             <h3 className="mb-2 text-lg font-semibold">Multiple Methods</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              CFOP, Roux, ZZ, and more. Find the method that works best for you.
+              From beginner-friendly layer-by-layer to CFOP. Find the method that works best for you.
             </p>
           </Card>
         </div>
@@ -85,15 +90,15 @@ export default function HomePage() {
         {/* Stats Section */}
         <div className="mt-24 grid gap-8 md:grid-cols-3">
           <div className="text-center">
-            <div className="mb-2 text-5xl font-bold text-primary">50+</div>
+            <div className="mb-2 text-5xl font-bold text-primary">{algorithmCount}</div>
             <p className="text-muted-foreground">Algorithms Available</p>
           </div>
           <div className="text-center">
-            <div className="mb-2 text-5xl font-bold text-accent">6</div>
+            <div className="mb-2 text-5xl font-bold text-accent">{cubeTypeCount}</div>
             <p className="text-muted-foreground">Cube Types Supported</p>
           </div>
           <div className="text-center">
-            <div className="mb-2 text-5xl font-bold text-chart-3">5</div>
+            <div className="mb-2 text-5xl font-bold text-chart-3">{methodCount}</div>
             <p className="text-muted-foreground">Solving Methods</p>
           </div>
         </div>

@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { Github, Linkedin, Instagram } from 'lucide-react'
 
 export function Footer() {

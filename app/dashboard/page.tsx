@@ -1,12 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Navigation } from "@/components/navigation"
 import { Card } from "@/components/ui/card"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth, db } from "@/lib/firebase"
-import { collection, query, where, orderBy, getDocs, doc, setDoc, getDoc } from "firebase/firestore"
+import { collection, query, where, orderBy, getDocs, doc, setDoc, getDoc, Timestamp } from "firebase/firestore"
 import { algorithms } from "@/lib/algorithms"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -16,7 +16,7 @@ import { Trophy, Clock, TrendingUp, BookOpen } from "lucide-react"
 interface Solve {
   time: number
   cubeType: string
-  timestamp: any
+  timestamp: Timestamp
 }
 
 interface AlgoProgress {
@@ -35,14 +35,7 @@ export default function DashboardPage() {
     }
   }, [user, loading, router])
 
-  useEffect(() => {
-    if (user) {
-      fetchSolves()
-      fetchAlgoProgress()
-    }
-  }, [user])
-
-  const fetchSolves = async () => {
+  const fetchSolves = useCallback(async () => {
     if (!user) return
 
     try {
@@ -53,9 +46,9 @@ export default function DashboardPage() {
     } catch (error) {
       console.error("Error fetching solves:", error)
     }
-  }
+  }, [user])
 
-  const fetchAlgoProgress = async () => {
+  const fetchAlgoProgress = useCallback(async () => {
     if (!user) return
 
     try {
@@ -68,7 +61,14 @@ export default function DashboardPage() {
     } catch (error) {
       console.error("Error fetching algo progress:", error)
     }
-  }
+  }, [user])
+
+  useEffect(() => {
+    if (user) {
+      fetchSolves()
+      fetchAlgoProgress()
+    }
+  }, [user, fetchSolves, fetchAlgoProgress])
 
   const updateAlgoProgress = async (algoId: string, status: "learning" | "learned" | null) => {
     if (!user) return

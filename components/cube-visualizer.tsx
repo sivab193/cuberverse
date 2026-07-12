@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls, Environment } from '@react-three/drei'
+import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 
 // Colors based on standard Rubik's cube
@@ -230,6 +230,7 @@ function CubeGroup({ sequence, sequenceId, resetId }: { sequence: string[], sequ
 
   return (
     <group>
+      {/* eslint-disable-next-line react-hooks/refs -- initial mesh transforms come from a ref that is only mutated inside useFrame, never during render */}
       {CUBIES.map((c, i) => (
         <mesh
           key={c.id}
@@ -256,9 +257,10 @@ export function CubeVisualizer({ sequence, sequenceId, resetId }: CubeVisualizer
   return (
     <div className="h-[400px] w-full rounded-xl border bg-secondary/20 overflow-hidden relative">
       <Canvas camera={{ position: [4, 4, 6], fov: 45 }}>
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 10]} intensity={1} />
-        <Environment preset="city" />
+        <ambientLight intensity={0.9} />
+        <directionalLight position={[10, 10, 10]} intensity={1.6} />
+        <directionalLight position={[-8, 6, -10]} intensity={0.7} />
+        <directionalLight position={[0, -10, 4]} intensity={0.4} />
         <CubeGroup sequence={sequence} sequenceId={sequenceId} resetId={resetId} />
         <OrbitControls enablePan={false} minDistance={3} maxDistance={12} />
       </Canvas>
