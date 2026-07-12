@@ -6,8 +6,10 @@ export type CubeType = "2x2" | "3x3" | "4x4" | "5x5" | "6x6" | "7x7" | "pyraminx
 export type MethodType =
   | "Beginners"
   | "CFOP"
+  | "OH"
   | "Ortega"
   | "CLL"
+  | "EG-1"
   | "Reduction"
   | "L4E"
 

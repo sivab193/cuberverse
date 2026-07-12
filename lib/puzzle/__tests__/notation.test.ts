@@ -32,11 +32,12 @@ describe("NxN notation parser", () => {
     expect(parseMove("2L'", "444")).toEqual({ family: "L", fromLayer: 2, toLayer: 2, amount: -1 })
   })
 
-  it("parses slice moves on odd cubes only", () => {
+  it("parses slice moves: middle layer on odd cubes, middle pair on even", () => {
     expect(parseMove("M", "333")).toEqual({ family: "M", fromLayer: 2, toLayer: 2, amount: 1 })
     expect(parseMove("E'", "555")).toEqual({ family: "E", fromLayer: 3, toLayer: 3, amount: -1 })
-    expect(() => parseMove("M", "444")).toThrow(NotationError)
-    expect(() => parseMove("S", "222")).toThrow(NotationError)
+    // Big-cube convention (used by jperm.net 4x4 algs): M turns both middle layers.
+    expect(parseMove("M", "444")).toEqual({ family: "M", fromLayer: 2, toLayer: 3, amount: 1 })
+    expect(parseMove("S2", "666")).toEqual({ family: "S", fromLayer: 3, toLayer: 4, amount: 2 })
   })
 
   it("parses rotations as all-layer moves", () => {

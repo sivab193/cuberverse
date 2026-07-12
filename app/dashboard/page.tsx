@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Navigation } from "@/components/navigation"
 import { Card } from "@/components/ui/card"
@@ -106,6 +107,8 @@ export default function DashboardPage() {
   const totalSolves = solves.length
   const learningCount = Object.values(algoProgress).filter((s) => s === "learning").length
   const learnedCount = Object.values(algoProgress).filter((s) => s === "learned").length
+  // Only the algorithms the user actually tracks — the full library is hundreds of cases.
+  const trackedAlgorithms = algorithms.filter((algo) => algoProgress[algo.id])
 
   if (loading || !user) {
     return <div>Loading...</div>
@@ -189,9 +192,25 @@ export default function DashboardPage() {
 
           <TabsContent value="algorithms">
             <Card className="p-6">
-              <h2 className="mb-4 text-xl font-semibold">Algorithm Progress</h2>
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                <h2 className="text-xl font-semibold">Algorithm Progress</h2>
+                <Link href="/algorithms">
+                  <Button variant="outline" size="sm">
+                    Browse all {algorithms.length} algorithms
+                  </Button>
+                </Link>
+              </div>
+              {trackedAlgorithms.length === 0 && (
+                <p className="text-center text-muted-foreground">
+                  No algorithms tracked yet. Mark cases as Learning or Learned in the{" "}
+                  <Link href="/algorithms" className="text-primary underline-offset-2 hover:underline">
+                    algorithm library
+                  </Link>{" "}
+                  and they&apos;ll show up here.
+                </p>
+              )}
               <div className="space-y-4">
-                {algorithms.map((algo) => {
+                {trackedAlgorithms.map((algo) => {
                   const status = algoProgress[algo.id]
 
                   return (

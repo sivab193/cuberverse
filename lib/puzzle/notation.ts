@@ -61,12 +61,16 @@ function parseNxnToken(token: string, index: number, n: number): ParsedMove {
     if (prefix !== undefined || wide) {
       throw new NotationError("Slice moves take no prefix or w", token, index)
     }
-    if (n % 2 === 0) {
-      throw new NotationError(`Slice move has no middle layer on a ${n}x${n} cube`, token, index)
-    }
     family = letter
-    fromLayer = (n + 1) / 2
-    toLayer = (n + 1) / 2
+    if (n % 2 === 0) {
+      // Even cubes have no single middle layer; by the common big-cube
+      // convention (e.g. jperm.net's 4x4 algs) M/E/S turn the middle pair.
+      fromLayer = n / 2
+      toLayer = n / 2 + 1
+    } else {
+      fromLayer = (n + 1) / 2
+      toLayer = (n + 1) / 2
+    }
   } else {
     // x y z rotations
     if (prefix !== undefined || wide) {
