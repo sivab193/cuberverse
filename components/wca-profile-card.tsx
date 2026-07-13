@@ -89,7 +89,7 @@ export function WcaProfileCard({ uid }: WcaProfileCardProps) {
 
   if (!wcaId) {
     return (
-      <Card className="p-6">
+      <Card className="p-4 sm:p-6">
         <h2 className="mb-1 text-xl font-semibold">WCA Profile</h2>
         <p className="mb-4 text-sm text-muted-foreground">
           Connect your World Cube Association account to see your official records, rankings,
@@ -114,9 +114,9 @@ export function WcaProfileCard({ uid }: WcaProfileCardProps) {
   }
 
   return (
-    <Card className="p-6">
+    <Card className="p-4 sm:p-6">
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-        <div className="flex items-center gap-4">
+        <div className="flex min-w-0 items-center gap-3 sm:gap-4">
           {info?.person.avatar && !info.person.avatar.is_default ? (
             <Image
               src={info.person.avatar.thumb_url}
@@ -124,16 +124,18 @@ export function WcaProfileCard({ uid }: WcaProfileCardProps) {
               width={56}
               height={56}
               unoptimized
-              className="h-14 w-14 rounded-lg object-cover"
+              className="h-14 w-14 shrink-0 rounded-lg object-cover"
             />
           ) : (
-            <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-secondary text-2xl">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-secondary text-2xl">
               {info ? countryFlag(info.person.country_iso2) : "…"}
             </div>
           )}
-          <div>
-            <h2 className="text-xl font-semibold">{info?.person.name ?? wcaId}</h2>
-            <p className="text-sm text-muted-foreground">
+          <div className="min-w-0">
+            <h2 className="break-words text-lg font-semibold sm:text-xl">
+              {info?.person.name ?? wcaId}
+            </h2>
+            <p className="break-words text-sm text-muted-foreground">
               <span className="font-mono">{wcaId}</span>
               {info && (
                 <>

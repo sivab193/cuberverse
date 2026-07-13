@@ -111,51 +111,60 @@ export default function DashboardPage() {
   const trackedAlgorithms = algorithms.filter((algo) => algoProgress[algo.id])
 
   if (loading || !user) {
-    return <div>Loading...</div>
+    return (
+      <div>
+        <Navigation />
+        <main className="mx-auto max-w-7xl px-4 py-16 text-center text-muted-foreground sm:px-6">
+          Loading…
+        </main>
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen">
+    <div>
       <Navigation />
 
-      <main className="mx-auto max-w-7xl px-6 py-12">
-        <div className="mb-8">
-          <h1 className="mb-2 text-4xl font-bold">Dashboard</h1>
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="mb-2 text-3xl font-bold sm:text-4xl">Dashboard</h1>
           <p className="text-muted-foreground">Track your progress and improvement</p>
         </div>
 
         {/* Stats Grid */}
-        <div className="mb-8 grid gap-6 md:grid-cols-4">
-          <Card className="p-6">
+        <div className="mb-8 grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-4">
+          <Card className="p-4 sm:p-6">
             <div className="mb-2 flex items-center gap-2 text-muted-foreground">
-              <Trophy className="h-4 w-4" />
-              <span className="text-sm">Best Time</span>
+              <Trophy className="h-4 w-4 shrink-0" />
+              <span className="text-xs sm:text-sm">Best Time</span>
             </div>
-            <div className="font-mono text-3xl font-bold">{bestTime > 0 ? formatTime(bestTime) : "-"}</div>
+            <div className="font-mono text-2xl font-bold tabular-nums sm:text-3xl">
+              {bestTime > 0 ? formatTime(bestTime) : "-"}
+            </div>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <div className="mb-2 flex items-center gap-2 text-muted-foreground">
-              <Clock className="h-4 w-4" />
-              <span className="text-sm">Total Solves</span>
+              <Clock className="h-4 w-4 shrink-0" />
+              <span className="text-xs sm:text-sm">Total Solves</span>
             </div>
-            <div className="font-mono text-3xl font-bold">{totalSolves}</div>
+            <div className="font-mono text-2xl font-bold tabular-nums sm:text-3xl">{totalSolves}</div>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <div className="mb-2 flex items-center gap-2 text-muted-foreground">
-              <TrendingUp className="h-4 w-4" />
-              <span className="text-sm">Learning</span>
+              <TrendingUp className="h-4 w-4 shrink-0" />
+              <span className="text-xs sm:text-sm">Learning</span>
             </div>
-            <div className="font-mono text-3xl font-bold">{learningCount}</div>
+            <div className="font-mono text-2xl font-bold tabular-nums sm:text-3xl">{learningCount}</div>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <div className="mb-2 flex items-center gap-2 text-muted-foreground">
-              <BookOpen className="h-4 w-4" />
-              <span className="text-sm">Learned</span>
+              <BookOpen className="h-4 w-4 shrink-0" />
+              <span className="text-xs sm:text-sm">Learned</span>
             </div>
-            <div className="font-mono text-3xl font-bold">{learnedCount}</div>
+            <div className="font-mono text-2xl font-bold tabular-nums sm:text-3xl">{learnedCount}</div>
           </Card>
         </div>
 
@@ -164,25 +173,30 @@ export default function DashboardPage() {
         </div>
 
         <Tabs defaultValue="solves">
-          <TabsList>
+          <TabsList className="grid w-full grid-cols-2 sm:w-fit">
             <TabsTrigger value="solves">Recent Solves</TabsTrigger>
             <TabsTrigger value="algorithms">Algorithm Progress</TabsTrigger>
           </TabsList>
 
           <TabsContent value="solves">
-            <Card className="p-6">
-              <h2 className="mb-4 text-xl font-semibold">Recent Solves</h2>
+            <Card className="p-4 sm:p-6">
+              <h2 className="mb-4 text-lg font-semibold sm:text-xl">Recent Solves</h2>
               {solves.length === 0 ? (
                 <p className="text-center text-muted-foreground">No solves yet. Start timing!</p>
               ) : (
                 <div className="space-y-2">
                   {solves.slice(0, 20).map((solve, idx) => (
-                    <div key={idx} className="flex items-center justify-between rounded-lg bg-secondary p-4">
-                      <div className="flex items-center gap-4">
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between gap-3 rounded-lg bg-secondary p-3 sm:p-4"
+                    >
+                      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
                         <span className="text-sm text-muted-foreground">#{idx + 1}</span>
                         <Badge variant="outline">{solve.cubeType}</Badge>
                       </div>
-                      <span className="font-mono text-lg font-semibold">{formatTime(solve.time)}</span>
+                      <span className="font-mono font-semibold tabular-nums sm:text-lg">
+                        {formatTime(solve.time)}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -191,9 +205,9 @@ export default function DashboardPage() {
           </TabsContent>
 
           <TabsContent value="algorithms">
-            <Card className="p-6">
+            <Card className="p-4 sm:p-6">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-                <h2 className="text-xl font-semibold">Algorithm Progress</h2>
+                <h2 className="text-lg font-semibold sm:text-xl">Algorithm Progress</h2>
                 <Link href="/algorithms">
                   <Button variant="outline" size="sm">
                     Browse all {algorithms.length} algorithms
@@ -214,19 +228,25 @@ export default function DashboardPage() {
                   const status = algoProgress[algo.id]
 
                   return (
-                    <div key={algo.id} className="flex items-center justify-between rounded-lg bg-secondary p-4">
-                      <div className="flex-1">
-                        <div className="mb-1 flex items-center gap-2">
+                    <div
+                      key={algo.id}
+                      className="flex flex-col gap-3 rounded-lg bg-secondary p-4 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-1 flex flex-wrap items-center gap-2">
                           <h3 className="font-semibold">{algo.name}</h3>
                           <Badge variant="outline" className="text-xs">
                             {algo.category}
                           </Badge>
                         </div>
-                        <p className="font-mono text-sm text-muted-foreground">{algo.algorithm}</p>
+                        <p className="break-words font-mono text-sm text-muted-foreground">
+                          {algo.algorithm}
+                        </p>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex shrink-0 gap-2">
                         <Button
                           size="sm"
+                          className="flex-1 sm:flex-none"
                           variant={status === "learning" ? "default" : "outline"}
                           onClick={() => updateAlgoProgress(algo.id, status === "learning" ? null : "learning")}
                         >
@@ -234,6 +254,7 @@ export default function DashboardPage() {
                         </Button>
                         <Button
                           size="sm"
+                          className="flex-1 sm:flex-none"
                           variant={status === "learned" ? "default" : "outline"}
                           onClick={() => updateAlgoProgress(algo.id, status === "learned" ? null : "learned")}
                         >

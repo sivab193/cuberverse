@@ -154,7 +154,7 @@ function BigCubesTab() {
   const [size, setSize] = useState<PuzzleId>("444")
   return (
     <div className="space-y-6">
-      <div className="flex justify-center gap-2">
+      <div className="flex flex-wrap justify-center gap-2">
         {BIG_CUBES.map((cube) => (
           <button
             key={cube.id}
@@ -184,24 +184,32 @@ function BigCubesTab() {
 
 export default function NotationPage() {
   return (
-    <div className="min-h-screen">
+    <div>
       <Navigation />
 
-      <main className="mx-auto max-w-5xl px-6 py-12">
-        <div className="mb-8">
-          <h1 className="mb-3 text-4xl font-bold">Cube Notation Guide</h1>
-          <p className="text-lg text-muted-foreground">
+      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="mb-3 text-3xl font-bold sm:text-4xl">Cube Notation Guide</h1>
+          <p className="text-base text-muted-foreground sm:text-lg">
             Learn what each letter and symbol means when solving different cubes — every move is
             clickable and animates on a live 3D puzzle
           </p>
         </div>
 
         <Tabs defaultValue="3x3" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="3x3">3x3 Cube</TabsTrigger>
-            <TabsTrigger value="2x2">2x2 Cube</TabsTrigger>
-            <TabsTrigger value="big">Big Cubes</TabsTrigger>
-            <TabsTrigger value="pyraminx">Pyraminx</TabsTrigger>
+          <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-4">
+            <TabsTrigger value="3x3" className="py-1.5">
+              3x3 Cube
+            </TabsTrigger>
+            <TabsTrigger value="2x2" className="py-1.5">
+              2x2 Cube
+            </TabsTrigger>
+            <TabsTrigger value="big" className="py-1.5">
+              Big Cubes
+            </TabsTrigger>
+            <TabsTrigger value="pyraminx" className="py-1.5">
+              Pyraminx
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="3x3" className="mt-6">

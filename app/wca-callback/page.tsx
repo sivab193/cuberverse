@@ -65,10 +65,10 @@ export default function WcaCallbackPage() {
   }, [user, authLoading, router])
 
   return (
-    <div className="min-h-screen">
+    <div>
       <Navigation />
-      <main className="mx-auto max-w-xl px-6 py-24">
-        <Card className="p-8 text-center">
+      <main className="mx-auto max-w-xl px-4 py-12 sm:px-6 sm:py-24">
+        <Card className="p-6 text-center sm:p-8">
           {error ? (
             <>
               <h1 className="mb-3 text-xl font-semibold">WCA connection failed</h1>

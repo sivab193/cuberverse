@@ -112,13 +112,13 @@ export default function SolvePage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div>
       <Navigation />
 
-      <main className="mx-auto max-w-3xl px-6 py-12">
-        <div className="mb-8">
-          <h1 className="mb-3 text-4xl font-bold">Scan &amp; Solve</h1>
-          <p className="text-lg text-muted-foreground">
+      <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="mb-3 text-3xl font-bold sm:text-4xl">Scan &amp; Solve</h1>
+          <p className="text-base text-muted-foreground sm:text-lg">
             Show your scrambled puzzle to the camera and get a shortest-path solution played
             back in 3D. Everything runs on your device — no photos leave the browser.
           </p>
@@ -127,7 +127,7 @@ export default function SolvePage() {
         {step === "pick" && (
           <div className="grid gap-4 sm:grid-cols-3">
             {PUZZLE_CHOICES.map((choice) => (
-              <Card key={choice.id} className="flex flex-col items-center gap-3 p-6">
+              <Card key={choice.id} className="flex flex-col items-center gap-3 p-4 sm:p-6">
                 <ScanLine className="h-8 w-8 text-primary" />
                 <div className="text-center">
                   <p className="text-xl font-semibold">{choice.name}</p>
@@ -149,7 +149,7 @@ export default function SolvePage() {
         )}
 
         {step === "scan" && (
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <ScanFlow
               puzzle={puzzle}
               onComplete={handleScanComplete}
@@ -164,7 +164,7 @@ export default function SolvePage() {
         )}
 
         {step === "review" && (
-          <Card className="space-y-4 p-6">
+          <Card className="space-y-4 p-4 sm:p-6">
             <div>
               <h2 className="text-xl font-semibold">Check the colors</h2>
               <p className="text-sm text-muted-foreground">
@@ -215,7 +215,7 @@ export default function SolvePage() {
         )}
 
         {step === "done" && solution && (
-          <Card className="space-y-4 p-6">
+          <Card className="space-y-4 p-4 sm:p-6">
             <div className="text-center">
               <h2 className="text-xl font-semibold">
                 Solution: {solution.split(/\s+/).length} moves

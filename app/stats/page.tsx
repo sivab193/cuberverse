@@ -117,21 +117,28 @@ export default function StatsPage() {
   })
 
   if (loading || !user) {
-    return <div>Loading...</div>
+    return (
+      <div>
+        <Navigation />
+        <main className="mx-auto max-w-7xl px-4 py-16 text-center text-muted-foreground sm:px-6">
+          Loading…
+        </main>
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen">
+    <div>
       <Navigation />
 
-      <main className="mx-auto max-w-7xl px-6 py-12">
-        <div className="mb-8">
-          <h1 className="mb-2 text-4xl font-bold">Statistics & Progress</h1>
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="mb-2 text-3xl font-bold sm:text-4xl">Statistics &amp; Progress</h1>
           <p className="text-muted-foreground">Analyze your solving performance over time</p>
         </div>
 
         {/* Cube Type Filter */}
-        <div className="mb-6 flex gap-2">
+        <div className="mb-6 flex flex-wrap gap-2">
           <button
             onClick={() => setSelectedCube("all")}
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
@@ -160,44 +167,50 @@ export default function StatsPage() {
         ) : (
           <>
             {/* Key Stats */}
-            <div className="mb-8 grid gap-6 md:grid-cols-4">
-              <Card className="p-6">
+            <div className="mb-8 grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-4">
+              <Card className="p-4 sm:p-6">
                 <div className="mb-2 flex items-center gap-2 text-muted-foreground">
-                  <Award className="h-4 w-4" />
-                  <span className="text-sm">Personal Best</span>
+                  <Award className="h-4 w-4 shrink-0" />
+                  <span className="text-xs sm:text-sm">Personal Best</span>
                 </div>
-                <div className="mb-1 font-mono text-3xl font-bold">{formatTime(bestTime)}</div>
+                <div className="mb-1 font-mono text-2xl font-bold tabular-nums sm:text-3xl">
+                  {formatTime(bestTime)}
+                </div>
                 <p className="text-xs text-muted-foreground">All-time record</p>
               </Card>
 
-              <Card className="p-6">
+              <Card className="p-4 sm:p-6">
                 <div className="mb-2 flex items-center gap-2 text-muted-foreground">
-                  <Activity className="h-4 w-4" />
-                  <span className="text-sm">Average</span>
+                  <Activity className="h-4 w-4 shrink-0" />
+                  <span className="text-xs sm:text-sm">Average</span>
                 </div>
-                <div className="mb-1 font-mono text-3xl font-bold">{formatTime(avgTime)}</div>
+                <div className="mb-1 font-mono text-2xl font-bold tabular-nums sm:text-3xl">
+                  {formatTime(avgTime)}
+                </div>
                 <p className="text-xs text-muted-foreground">Overall average</p>
               </Card>
 
-              <Card className="p-6">
+              <Card className="p-4 sm:p-6">
                 <div className="mb-2 flex items-center gap-2 text-muted-foreground">
-                  <Activity className="h-4 w-4" />
-                  <span className="text-sm">Ao5</span>
+                  <Activity className="h-4 w-4 shrink-0" />
+                  <span className="text-xs sm:text-sm">Ao5</span>
                 </div>
-                <div className="mb-1 font-mono text-3xl font-bold">{ao5 > 0 ? formatTime(ao5) : "-"}</div>
+                <div className="mb-1 font-mono text-2xl font-bold tabular-nums sm:text-3xl">
+                  {ao5 > 0 ? formatTime(ao5) : "-"}
+                </div>
                 <p className="text-xs text-muted-foreground">Average of 5</p>
               </Card>
 
-              <Card className="p-6">
+              <Card className="p-4 sm:p-6">
                 <div className="mb-2 flex items-center gap-2 text-muted-foreground">
                   {improvement >= 0 ? (
-                    <TrendingDown className="h-4 w-4 text-green-500" />
+                    <TrendingDown className="h-4 w-4 shrink-0 text-green-500" />
                   ) : (
-                    <TrendingUp className="h-4 w-4 text-red-500" />
+                    <TrendingUp className="h-4 w-4 shrink-0 text-red-500" />
                   )}
-                  <span className="text-sm">Improvement</span>
+                  <span className="text-xs sm:text-sm">Improvement</span>
                 </div>
-                <div className="mb-1 font-mono text-3xl font-bold">
+                <div className="mb-1 font-mono text-2xl font-bold tabular-nums sm:text-3xl">
                   {improvement > 0 ? "+" : ""}
                   {improvement.toFixed(1)}%
                 </div>
@@ -206,109 +219,139 @@ export default function StatsPage() {
             </div>
 
             <Tabs defaultValue="progression" className="mb-8">
-              <TabsList>
+              <TabsList className="grid w-full grid-cols-3 sm:w-fit">
                 <TabsTrigger value="progression">Progression</TabsTrigger>
                 <TabsTrigger value="distribution">Distribution</TabsTrigger>
                 <TabsTrigger value="averages">Averages</TabsTrigger>
               </TabsList>
 
               <TabsContent value="progression">
-                <Card className="p-6">
-                  <h2 className="mb-4 text-xl font-semibold">Time Progression (Last 20 Solves)</h2>
-                  <ResponsiveContainer width="100%" height={400}>
-                    <LineChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
-                      <XAxis dataKey="solve" stroke="hsl(var(--muted-foreground))" />
-                      <YAxis stroke="hsl(var(--muted-foreground))" />
-                      <Tooltip
-                        content={({ active, payload }) => {
-                          if (active && payload && payload[0]) {
-                            return (
-                              <div className="rounded-lg border bg-card p-2 shadow-lg">
-                                <p className="text-sm font-semibold">Solve #{payload[0].payload.solve}</p>
-                                <p className="text-sm text-muted-foreground">{formatTime(payload[0].payload.timeMs)}</p>
-                              </div>
-                            )
-                          }
-                          return null
-                        }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="time"
-                        stroke="hsl(var(--primary))"
-                        strokeWidth={2}
-                        dot={{ fill: "hsl(var(--primary))" }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
+                <Card className="p-4 sm:p-6">
+                  <h2 className="mb-4 text-lg font-semibold sm:text-xl">
+                    Time Progression (Last 20 Solves)
+                  </h2>
+                  {/* Chart colors come from the theme's oklch vars via
+                      --color-*; hsl(var(--primary)) would be an invalid color. */}
+                  <div className="h-64 w-full sm:h-80 lg:h-96">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={chartData} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                        <XAxis
+                          dataKey="solve"
+                          stroke="var(--color-muted-foreground)"
+                          tick={{ fontSize: 11 }}
+                        />
+                        <YAxis stroke="var(--color-muted-foreground)" tick={{ fontSize: 11 }} />
+                        <Tooltip
+                          content={({ active, payload }) => {
+                            if (active && payload && payload[0]) {
+                              return (
+                                <div className="rounded-lg border bg-card p-2 shadow-lg">
+                                  <p className="text-sm font-semibold">Solve #{payload[0].payload.solve}</p>
+                                  <p className="text-sm text-muted-foreground">{formatTime(payload[0].payload.timeMs)}</p>
+                                </div>
+                              )
+                            }
+                            return null
+                          }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="time"
+                          stroke="var(--color-primary)"
+                          strokeWidth={2}
+                          dot={{ fill: "var(--color-primary)" }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
                 </Card>
               </TabsContent>
 
               <TabsContent value="distribution">
-                <Card className="p-6">
-                  <h2 className="mb-4 text-xl font-semibold">Time Distribution</h2>
-                  <ResponsiveContainer width="100%" height={400}>
-                    <BarChart data={timeRanges}>
-                      <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
-                      <XAxis dataKey="range" stroke="hsl(var(--muted-foreground))" />
-                      <YAxis stroke="hsl(var(--muted-foreground))" />
-                      <Tooltip
-                        content={({ active, payload }) => {
-                          if (active && payload && payload[0]) {
-                            return (
-                              <div className="rounded-lg border bg-card p-2 shadow-lg">
-                                <p className="text-sm font-semibold">{payload[0].payload.range}</p>
-                                <p className="text-sm text-muted-foreground">{payload[0].value} solves</p>
-                              </div>
-                            )
-                          }
-                          return null
-                        }}
-                      />
-                      <Bar dataKey="count" fill="hsl(var(--accent))" radius={[8, 8, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
+                <Card className="p-4 sm:p-6">
+                  <h2 className="mb-4 text-lg font-semibold sm:text-xl">Time Distribution</h2>
+                  <div className="h-64 w-full sm:h-80 lg:h-96">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={timeRanges} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                        <XAxis
+                          dataKey="range"
+                          stroke="var(--color-muted-foreground)"
+                          interval={0}
+                          angle={-30}
+                          textAnchor="end"
+                          height={52}
+                          tick={{ fontSize: 10 }}
+                        />
+                        <YAxis
+                          stroke="var(--color-muted-foreground)"
+                          allowDecimals={false}
+                          tick={{ fontSize: 11 }}
+                        />
+                        <Tooltip
+                          content={({ active, payload }) => {
+                            if (active && payload && payload[0]) {
+                              return (
+                                <div className="rounded-lg border bg-card p-2 shadow-lg">
+                                  <p className="text-sm font-semibold">{payload[0].payload.range}</p>
+                                  <p className="text-sm text-muted-foreground">{payload[0].value} solves</p>
+                                </div>
+                              )
+                            }
+                            return null
+                          }}
+                        />
+                        <Bar dataKey="count" fill="var(--color-accent)" radius={[8, 8, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
                 </Card>
               </TabsContent>
 
               <TabsContent value="averages">
-                <Card className="p-6">
-                  <h2 className="mb-6 text-xl font-semibold">Session Averages</h2>
-                  <div className="grid gap-6 md:grid-cols-3">
-                    <div className="rounded-lg bg-secondary p-6 text-center">
+                <Card className="p-4 sm:p-6">
+                  <h2 className="mb-6 text-lg font-semibold sm:text-xl">Session Averages</h2>
+                  <div className="grid gap-4 sm:grid-cols-3 sm:gap-6">
+                    <div className="rounded-lg bg-secondary p-4 text-center sm:p-6">
                       <div className="mb-2 text-sm text-muted-foreground">Average of 5</div>
-                      <div className="mb-1 font-mono text-4xl font-bold">{ao5 > 0 ? formatTime(ao5) : "-"}</div>
+                      <div className="mb-1 font-mono text-3xl font-bold tabular-nums sm:text-4xl">
+                        {ao5 > 0 ? formatTime(ao5) : "-"}
+                      </div>
                       <p className="text-xs text-muted-foreground">Best recent average</p>
                     </div>
-                    <div className="rounded-lg bg-secondary p-6 text-center">
+                    <div className="rounded-lg bg-secondary p-4 text-center sm:p-6">
                       <div className="mb-2 text-sm text-muted-foreground">Average of 12</div>
-                      <div className="mb-1 font-mono text-4xl font-bold">{ao12 > 0 ? formatTime(ao12) : "-"}</div>
+                      <div className="mb-1 font-mono text-3xl font-bold tabular-nums sm:text-4xl">
+                        {ao12 > 0 ? formatTime(ao12) : "-"}
+                      </div>
                       <p className="text-xs text-muted-foreground">Medium average</p>
                     </div>
-                    <div className="rounded-lg bg-secondary p-6 text-center">
+                    <div className="rounded-lg bg-secondary p-4 text-center sm:p-6">
                       <div className="mb-2 text-sm text-muted-foreground">Average of 100</div>
-                      <div className="mb-1 font-mono text-4xl font-bold">{ao100 > 0 ? formatTime(ao100) : "-"}</div>
+                      <div className="mb-1 font-mono text-3xl font-bold tabular-nums sm:text-4xl">
+                        {ao100 > 0 ? formatTime(ao100) : "-"}
+                      </div>
                       <p className="text-xs text-muted-foreground">Session average</p>
                     </div>
                   </div>
 
                   <div className="mt-8 space-y-3">
-                    <div className="flex items-center justify-between rounded-lg bg-secondary p-4">
+                    <div className="flex items-center justify-between gap-3 rounded-lg bg-secondary p-4">
                       <span className="text-sm text-muted-foreground">Best Single</span>
-                      <span className="font-mono font-semibold">{formatTime(bestTime)}</span>
+                      <span className="font-mono font-semibold tabular-nums">{formatTime(bestTime)}</span>
                     </div>
-                    <div className="flex items-center justify-between rounded-lg bg-secondary p-4">
+                    <div className="flex items-center justify-between gap-3 rounded-lg bg-secondary p-4">
                       <span className="text-sm text-muted-foreground">Worst Single</span>
-                      <span className="font-mono font-semibold">{formatTime(worstTime)}</span>
+                      <span className="font-mono font-semibold tabular-nums">{formatTime(worstTime)}</span>
                     </div>
-                    <div className="flex items-center justify-between rounded-lg bg-secondary p-4">
+                    <div className="flex items-center justify-between gap-3 rounded-lg bg-secondary p-4">
                       <span className="text-sm text-muted-foreground">Total Solves</span>
-                      <span className="font-mono font-semibold">{filteredSolves.length}</span>
+                      <span className="font-mono font-semibold tabular-nums">{filteredSolves.length}</span>
                     </div>
-                    <div className="flex items-center justify-between rounded-lg bg-secondary p-4">
+                    <div className="flex items-center justify-between gap-3 rounded-lg bg-secondary p-4">
                       <span className="text-sm text-muted-foreground">Mean Time</span>
-                      <span className="font-mono font-semibold">{formatTime(avgTime)}</span>
+                      <span className="font-mono font-semibold tabular-nums">{formatTime(avgTime)}</span>
                     </div>
                   </div>
                 </Card>

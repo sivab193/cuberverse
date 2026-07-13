@@ -48,9 +48,11 @@ function CompetitionCard({ comp }: { comp: WcaCompetition }) {
   const events = sortEventIds(comp.event_ids)
   const shown = events.slice(0, 8)
   return (
-    <Card className="p-5">
+    <Card className="p-4 sm:p-5">
       <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
-        <h3 className="text-lg font-semibold">{comp.short_display_name}</h3>
+        <h3 className="min-w-0 break-words text-base font-semibold sm:text-lg">
+          {comp.short_display_name}
+        </h3>
         <RegistrationBadge comp={comp} />
       </div>
       <div className="mb-3 space-y-1 text-sm text-muted-foreground">
@@ -58,9 +60,11 @@ function CompetitionCard({ comp }: { comp: WcaCompetition }) {
           <CalendarDays className="h-4 w-4 shrink-0" />
           {comp.date_range}
         </p>
-        <p className="flex items-center gap-2">
-          <MapPin className="h-4 w-4 shrink-0" />
-          {comp.city} — {comp.venue.replace(/\[|\]|\(.*?\)/g, "")}
+        <p className="flex items-start gap-2">
+          <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+          <span className="min-w-0 break-words">
+            {comp.city} — {comp.venue.replace(/\[|\]|\(.*?\)/g, "")}
+          </span>
         </p>
         {comp.competitor_limit && (
           <p className="flex items-center gap-2">
@@ -174,13 +178,13 @@ export default function CompetitionsPage() {
   }, [competitions, filter])
 
   return (
-    <div className="min-h-screen">
+    <div>
       <Navigation />
 
-      <main className="mx-auto max-w-5xl px-6 py-12">
-        <div className="mb-8">
-          <h1 className="mb-3 text-4xl font-bold">Competitions</h1>
-          <p className="text-lg text-muted-foreground">
+      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="mb-3 text-3xl font-bold sm:text-4xl">Competitions</h1>
+          <p className="text-base text-muted-foreground sm:text-lg">
             Upcoming WCA competitions near you — pick your country, then filter by city or state
             to find ones you can attend.
           </p>
@@ -188,7 +192,8 @@ export default function CompetitionsPage() {
 
         <div className="mb-6 flex flex-col gap-3 sm:flex-row">
           <Select value={country} onValueChange={changeCountry}>
-            <SelectTrigger className="sm:w-64">
+            {/* SelectTrigger is w-fit by default — without w-full it collapses on mobile. */}
+            <SelectTrigger className="w-full sm:w-64">
               <SelectValue placeholder="Choose your country" />
             </SelectTrigger>
             <SelectContent className="max-h-80">

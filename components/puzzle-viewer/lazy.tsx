@@ -11,7 +11,7 @@ import type { PuzzleViewerProps } from "./viewer"
 export const LazyPuzzleViewer = dynamic<PuzzleViewerProps>(() => import("./viewer"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-[400px] w-full items-center justify-center rounded-xl border bg-secondary/20 text-sm text-muted-foreground">
+    <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
       Loading 3D viewer…
     </div>
   ),

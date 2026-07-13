@@ -11,32 +11,32 @@ export default function HomePage() {
   const methodCount = new Set(algorithms.map((algo) => algo.method)).size
 
   return (
-    <div className="min-h-screen">
+    <div>
       <Navigation />
 
-      <main className="mx-auto max-w-7xl px-6 py-16">
+      <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
         {/* Hero Section */}
-        <div className="mb-24 text-center">
-          <h1 className="mb-6 text-balance text-6xl font-bold leading-tight">
+        <div className="mb-16 text-center sm:mb-24">
+          <h1 className="mb-4 text-balance text-4xl font-bold leading-tight sm:mb-6 sm:text-5xl lg:text-6xl">
             Master the Cube.
             <br />
             <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               Track Your Progress.
             </span>
           </h1>
-          <p className="mx-auto mb-8 max-w-2xl text-pretty text-lg text-muted-foreground leading-relaxed">
+          <p className="mx-auto mb-8 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
             Your complete speed cubing companion. Learn algorithms, practice with our timer, and track your improvement
             over time.
           </p>
-          <div className="flex items-center justify-center gap-4">
-            <Link href="/timer">
-              <Button size="lg" className="gap-2">
+          <div className="flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center sm:gap-4">
+            <Link href="/timer" className="sm:w-auto">
+              <Button size="lg" className="w-full gap-2 sm:w-auto">
                 <Timer className="h-5 w-5" />
                 Start Timer
               </Button>
             </Link>
-            <Link href="/algorithms">
-              <Button size="lg" variant="outline" className="gap-2 bg-transparent">
+            <Link href="/algorithms" className="sm:w-auto">
+              <Button size="lg" variant="outline" className="w-full gap-2 bg-transparent sm:w-auto">
                 <BookOpen className="h-5 w-5" />
                 Browse Algorithms
               </Button>
@@ -45,7 +45,7 @@ export default function HomePage() {
         </div>
 
         {/* Features Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
           <Card className="p-6">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
               <ScanLine className="h-6 w-6 text-primary" />
@@ -116,18 +116,18 @@ export default function HomePage() {
         </div>
 
         {/* Stats Section */}
-        <div className="mt-24 grid gap-8 md:grid-cols-3">
+        <div className="mt-16 grid gap-8 sm:mt-24 sm:grid-cols-3">
           <div className="text-center">
-            <div className="mb-2 text-5xl font-bold text-primary">{algorithmCount}</div>
-            <p className="text-muted-foreground">Algorithms Available</p>
+            <div className="mb-2 text-4xl font-bold text-primary sm:text-5xl">{algorithmCount}</div>
+            <p className="text-sm text-muted-foreground sm:text-base">Algorithms Available</p>
           </div>
           <div className="text-center">
-            <div className="mb-2 text-5xl font-bold text-accent">{cubeTypeCount}</div>
-            <p className="text-muted-foreground">Cube Types Supported</p>
+            <div className="mb-2 text-4xl font-bold text-accent sm:text-5xl">{cubeTypeCount}</div>
+            <p className="text-sm text-muted-foreground sm:text-base">Cube Types Supported</p>
           </div>
           <div className="text-center">
-            <div className="mb-2 text-5xl font-bold text-chart-3">{methodCount}</div>
-            <p className="text-muted-foreground">Solving Methods</p>
+            <div className="mb-2 text-4xl font-bold text-chart-3 sm:text-5xl">{methodCount}</div>
+            <p className="text-sm text-muted-foreground sm:text-base">Solving Methods</p>
           </div>
         </div>
       </main>

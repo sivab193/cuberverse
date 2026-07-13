@@ -158,13 +158,13 @@ function AlgorithmsContent() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div>
       <Navigation />
 
-      <main className="mx-auto max-w-7xl px-6 py-12">
-        <div className="mb-8">
-          <h1 className="mb-3 text-balance text-4xl font-bold">Algorithm Library</h1>
-          <p className="text-pretty text-lg text-muted-foreground">
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="mb-3 text-balance text-3xl font-bold sm:text-4xl">Algorithm Library</h1>
+          <p className="text-pretty text-base text-muted-foreground sm:text-lg">
             {algorithms.length} algorithms across {cubeTypes.length} puzzles — every case plays
             back on a 3D puzzle. Algorithms courtesy of{" "}
             <a
@@ -187,6 +187,8 @@ function AlgorithmsContent() {
             {cubeTypes.map((cube) => (
               <Button
                 key={cube}
+                size="sm"
+                className="sm:h-9 sm:px-4"
                 variant={selectedCube === cube ? "default" : "outline"}
                 onClick={() => setSelectedCube(cube)}
               >
@@ -196,21 +198,25 @@ function AlgorithmsContent() {
           </div>
         </div>
 
-        <div className="mb-8 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <Tabs
-            value={selectedMethod}
-            onValueChange={(value) => setSelectedMethod(value as MethodType)}
-          >
-            <TabsList>
-              {methods.map((method) => (
-                <TabsTrigger key={method} value={method}>
-                  {method}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+        <div className="mb-6 flex flex-col gap-3 sm:mb-8 lg:flex-row lg:items-center lg:justify-between">
+          {/* Up to 8 methods never fit on a phone — scroll them edge-to-edge
+              instead of letting the list blow out the page width. */}
+          <div className="-mx-4 min-w-0 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
+            <Tabs
+              value={selectedMethod}
+              onValueChange={(value) => setSelectedMethod(value as MethodType)}
+            >
+              <TabsList className="w-max">
+                {methods.map((method) => (
+                  <TabsTrigger key={method} value={method} className="flex-none">
+                    {method}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+          </div>
 
-          <div className="relative lg:w-72">
+          <div className="relative shrink-0 lg:w-72">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={search}
@@ -223,8 +229,8 @@ function AlgorithmsContent() {
 
         {sections.size > 0 ? (
           [...sections.entries()].map(([category, groups]) => (
-            <section key={category} className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold">
+            <section key={category} className="mb-10 sm:mb-12">
+              <h2 className="mb-4 text-xl font-bold sm:text-2xl">
                 {category}{" "}
                 <span className="text-base font-normal text-muted-foreground">
                   ({[...groups.values()].reduce((n, list) => n + list.length, 0)})
@@ -238,9 +244,9 @@ function AlgorithmsContent() {
                       {group}
                     </h3>
                   )}
-                  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     {groupAlgos.map((algo) => (
-                      <Card key={algo.id} className="flex flex-col p-5">
+                      <Card key={algo.id} className="flex flex-col p-4 sm:p-5">
                         <div className="mb-3 flex items-start justify-between gap-2">
                           <div className="min-w-0">
                             <div className="mb-1 flex flex-wrap items-center gap-1.5">
@@ -295,7 +301,7 @@ function AlgorithmsContent() {
 
                         <button
                           onClick={() => setDetail(algo)}
-                          className="mb-3 block w-full rounded-lg bg-secondary p-3 text-left font-mono text-sm transition-colors hover:bg-secondary/70"
+                          className="mb-3 block w-full break-words rounded-lg bg-secondary p-3 text-left font-mono text-sm leading-relaxed transition-colors hover:bg-secondary/70"
                           title="Watch this case in 3D"
                         >
                           {algo.algorithm}
@@ -341,9 +347,9 @@ export default function AlgorithmsPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen">
+        <div>
           <Navigation />
-          <main className="mx-auto max-w-7xl px-6 py-12">
+          <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
             <h1 className="mb-4 text-balance text-4xl font-bold">Algorithm Library</h1>
             <p className="text-pretty text-lg text-muted-foreground">Loading algorithms…</p>
           </main>

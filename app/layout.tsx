@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
@@ -12,6 +12,14 @@ export const metadata: Metadata = {
   generator: 'Next.js',
 }
 
+// No maximumScale/userScalable limits — pinch-zoom stays available.
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#262626',
+}
+
 import { Footer } from '@/components/footer'
 
 export default function RootLayout({
@@ -21,7 +29,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
-      <body className={`font-sans antialiased flex min-h-screen flex-col`}>
+      {/* min-h-dvh (not vh) so mobile browser chrome doesn't push the footer below the fold. */}
+      <body className={`font-sans antialiased flex min-h-dvh flex-col`}>
         <div className="flex-1">
           {children}
         </div>

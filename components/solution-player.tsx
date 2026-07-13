@@ -13,6 +13,8 @@ export interface SolutionPlayerProps {
   puzzle: PuzzleId
   /** Solution alg in our notation; the shown puzzle starts at its inverse (= the scanned state). */
   solution: string
+  /** Height box for the 3D viewer — override where vertical space is tight (e.g. in a dialog). */
+  viewerClassName?: string
 }
 
 /**
@@ -20,7 +22,7 @@ export interface SolutionPlayerProps {
  * solution's inverse applied to solved) and the timeline plays the solution,
  * with each move highlighted as it goes by.
  */
-export function SolutionPlayer({ puzzle, solution }: SolutionPlayerProps) {
+export function SolutionPlayer({ puzzle, solution, viewerClassName }: SolutionPlayerProps) {
   const controller = usePuzzleController(puzzle)
   const state = usePuzzleControllerState(controller)
 
@@ -35,7 +37,11 @@ export function SolutionPlayer({ puzzle, solution }: SolutionPlayerProps) {
 
   return (
     <div className="space-y-4">
-      <div className="h-72 w-full overflow-hidden rounded-xl border bg-card sm:h-96">
+      <div
+        className={`w-full overflow-hidden rounded-xl border bg-card ${
+          viewerClassName ?? "h-64 sm:h-80 md:h-96"
+        }`}
+      >
         <LazyPuzzleViewer controller={controller} />
       </div>
 

@@ -64,6 +64,7 @@ export function AlgorithmDetailDialog({ algorithm, onOpenChange }: AlgorithmDeta
             <SolutionPlayer
               puzzle={CUBE_TYPE_TO_PUZZLE[algorithm.cubeType]}
               solution={algorithm.algorithm}
+              viewerClassName="h-56 sm:h-72"
             />
 
             <div className="space-y-2">
@@ -75,7 +76,7 @@ export function AlgorithmDetailDialog({ algorithm, onOpenChange }: AlgorithmDeta
                   key={alg}
                   className="flex items-center justify-between gap-3 rounded-lg bg-secondary p-3"
                 >
-                  <code className="font-mono text-sm">{alg}</code>
+                  <code className="min-w-0 break-words font-mono text-sm">{alg}</code>
                   <div className="flex shrink-0 items-center gap-1">
                     {i === 0 && <Badge className="text-xs">Main</Badge>}
                     <Button size="sm" variant="ghost" onClick={() => copy(alg)}>
