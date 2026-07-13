@@ -1,22 +1,24 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Navigation } from "@/components/navigation"
 import { Card } from "@/components/ui/card"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth, db } from "@/lib/firebase"
-import { collection, query, where, orderBy, getDocs, doc, setDoc, getDoc } from "firebase/firestore"
+import { collection, query, where, orderBy, getDocs, doc, setDoc, getDoc, Timestamp } from "firebase/firestore"
 import { algorithms } from "@/lib/algorithms"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Trophy, Clock, TrendingUp, BookOpen } from "lucide-react"
+import { WcaProfileCard } from "@/components/wca-profile-card"
 
 interface Solve {
   time: number
   cubeType: string
-  timestamp: any
+  timestamp: Timestamp
 }
 
 interface AlgoProgress {
@@ -35,14 +37,7 @@ export default function DashboardPage() {
     }
   }, [user, loading, router])
 
-  useEffect(() => {
-    if (user) {
-      fetchSolves()
-      fetchAlgoProgress()
-    }
-  }, [user])
-
-  const fetchSolves = async () => {
+  const fetchSolves = useCallback(async () => {
     if (!user) return
 
     try {
@@ -53,9 +48,9 @@ export default function DashboardPage() {
     } catch (error) {
       console.error("Error fetching solves:", error)
     }
-  }
+  }, [user])
 
-  const fetchAlgoProgress = async () => {
+  const fetchAlgoProgress = useCallback(async () => {
     if (!user) return
 
     try {
@@ -68,7 +63,14 @@ export default function DashboardPage() {
     } catch (error) {
       console.error("Error fetching algo progress:", error)
     }
-  }
+  }, [user])
+
+  useEffect(() => {
+    if (user) {
+      fetchSolves()
+      fetchAlgoProgress()
+    }
+  }, [user, fetchSolves, fetchAlgoProgress])
 
   const updateAlgoProgress = async (algoId: string, status: "learning" | "learned" | null) => {
     if (!user) return
@@ -105,6 +107,8 @@ export default function DashboardPage() {
   const totalSolves = solves.length
   const learningCount = Object.values(algoProgress).filter((s) => s === "learning").length
   const learnedCount = Object.values(algoProgress).filter((s) => s === "learned").length
+  // Only the algorithms the user actually tracks — the full library is hundreds of cases.
+  const trackedAlgorithms = algorithms.filter((algo) => algoProgress[algo.id])
 
   if (loading || !user) {
     return <div>Loading...</div>
@@ -155,6 +159,10 @@ export default function DashboardPage() {
           </Card>
         </div>
 
+        <div className="mb-8">
+          <WcaProfileCard uid={user.uid} />
+        </div>
+
         <Tabs defaultValue="solves">
           <TabsList>
             <TabsTrigger value="solves">Recent Solves</TabsTrigger>
@@ -184,9 +192,25 @@ export default function DashboardPage() {
 
           <TabsContent value="algorithms">
             <Card className="p-6">
-              <h2 className="mb-4 text-xl font-semibold">Algorithm Progress</h2>
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                <h2 className="text-xl font-semibold">Algorithm Progress</h2>
+                <Link href="/algorithms">
+                  <Button variant="outline" size="sm">
+                    Browse all {algorithms.length} algorithms
+                  </Button>
+                </Link>
+              </div>
+              {trackedAlgorithms.length === 0 && (
+                <p className="text-center text-muted-foreground">
+                  No algorithms tracked yet. Mark cases as Learning or Learned in the{" "}
+                  <Link href="/algorithms" className="text-primary underline-offset-2 hover:underline">
+                    algorithm library
+                  </Link>{" "}
+                  and they&apos;ll show up here.
+                </p>
+              )}
               <div className="space-y-4">
-                {algorithms.map((algo) => {
+                {trackedAlgorithms.map((algo) => {
                   const status = algoProgress[algo.id]
 
                   return (

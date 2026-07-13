@@ -1,8 +1,9 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { User, Timer, BookOpen, LogIn, LogOut, TrendingUp, Book } from "lucide-react"
+import { User, Timer, BookOpen, LogIn, LogOut, TrendingUp, Book, ScanLine, Trophy } from "lucide-react"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth } from "@/lib/firebase"
 import { signOut } from "firebase/auth"
@@ -23,7 +24,7 @@ export function Navigation() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-            <img src="/logo.png" alt="CuberVerse Logo" className="w-full h-full object-cover" />
+            <Image src="/logo.png" alt="CuberVerse Logo" width={40} height={40} className="w-full h-full object-cover" />
           </div>
           <span className="text-xl font-bold">CuberVerse</span>
         </Link>
@@ -49,6 +50,20 @@ export function Navigation() {
           >
             <Book className="h-4 w-4" />
             Notation
+          </Link>
+          <Link
+            href="/solve"
+            className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ScanLine className="h-4 w-4" />
+            Solver
+          </Link>
+          <Link
+            href="/competitions"
+            className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Trophy className="h-4 w-4" />
+            Competitions
           </Link>
           {user && (
             <>

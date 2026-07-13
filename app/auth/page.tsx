@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { auth } from "@/lib/firebase"
+import { auth, isFirebaseConfigured } from "@/lib/firebase"
+import { getAuthErrorMessage } from "@/lib/auth-errors"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
 
 export default function AuthPage() {
@@ -28,8 +29,8 @@ export default function AuthPage() {
     try {
       await createUserWithEmailAndPassword(auth, email, password)
       router.push("/dashboard")
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(getAuthErrorMessage(err))
     } finally {
       setLoading(false)
     }
@@ -43,8 +44,8 @@ export default function AuthPage() {
     try {
       await signInWithEmailAndPassword(auth, email, password)
       router.push("/dashboard")
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(getAuthErrorMessage(err))
     } finally {
       setLoading(false)
     }
@@ -59,6 +60,15 @@ export default function AuthPage() {
           <h1 className="mb-2 text-3xl font-bold">Welcome Back</h1>
           <p className="text-muted-foreground">Sign in to track your progress</p>
         </div>
+
+        {!isFirebaseConfigured && (
+          <Card className="mb-6 border-destructive/50 p-4">
+            <p className="text-sm text-destructive">
+              Accounts are not available: Firebase is not configured for this deployment. See{" "}
+              <code className="font-mono">.env.example</code> for the required environment variables.
+            </p>
+          </Card>
+        )}
 
         <Card className="p-6">
           <Tabs defaultValue="signin">
