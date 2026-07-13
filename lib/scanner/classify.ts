@@ -311,3 +311,124 @@ export function classifyScan(puzzle: SolvablePuzzleId, faceSamples: RGB[][]): st
   }
   return base
 }
+
+export type FreeScan333Result =
+  | { ok: true; facelets: string }
+  | { ok: false; message: string }
+
+/** Rotate one row-major 3x3 face grid clockwise by a quarter turn. */
+function rotateFace333(face: string): string {
+  return [6, 3, 0, 7, 4, 1, 8, 5, 2].map((index) => face[index]).join("")
+}
+
+function faceRotations333(face: string): string[] {
+  const rotations = [face]
+  for (let i = 1; i < 4; i++) rotations.push(rotateFace333(rotations[i - 1]))
+  return rotations
+}
+
+/**
+ * Assemble a freely captured 3x3 scan.
+ *
+ * Unlike `classifyScan`, the six input faces may arrive in any order and at
+ * any in-plane rotation. We use their centers to identify colors, then try
+ * the 4^6 possible grid rotations. A candidate is accepted only when the
+ * existing physical-state validator agrees that it is a real cube state.
+ *
+ * This deliberately reports ambiguity instead of guessing: solving the wrong
+ * valid state would be much worse than asking the user to use guided scan.
+ */
+export function classifyFreeScan333(faceSamples: RGB[][]): FreeScan333Result {
+  if (faceSamples.length !== 6 || faceSamples.some((face) => face.length !== 9)) {
+    return {
+      ok: false,
+      message: "Show all six 3x3 faces before finishing the automatic scan.",
+    }
+  }
+
+  const cones = faceSamples.map((face) => face.map(rgbToCone))
+  const centers = cones.map((face) => face[4])
+  const names = nameClusters(centers, REFERENCE_RGB)
+  const flat = cones.flat()
+
+  // Balanced clustering preserves the exactly-nine-of-each-color property
+  // while the captured centers provide lighting-specific calibration.
+  const assignment = balancedClusters(flat, 6, 9, centers)
+  const clusterLetters = new Map<number, string>()
+  for (let face = 0; face < 6; face++) {
+    const cluster = assignment[face * 9 + 4]
+    if (clusterLetters.has(cluster)) {
+      return {
+        ok: false,
+        message: "Two captured faces look like the same center color. Rotate to a different face and try again.",
+      }
+    }
+    clusterLetters.set(cluster, names[face])
+  }
+
+  if (clusterLetters.size !== 6 || new Set(names).size !== 6) {
+    return {
+      ok: false,
+      message: "The camera could not distinguish all six center colors. Try more even lighting or use guided scan.",
+    }
+  }
+
+  if (assignment.some((cluster) => !clusterLetters.has(cluster))) {
+    return {
+      ok: false,
+      message: "The camera could not classify every sticker. Try scanning again in steadier light.",
+    }
+  }
+  const classified = assignment.map((cluster) => clusterLetters.get(cluster)!).join("")
+
+  const faces = new Map<string, string>()
+  for (let i = 0; i < 6; i++) {
+    const label = names[i]
+    const face = classified.slice(i * 9, (i + 1) * 9)
+    if (face[4] !== label || faces.has(label)) {
+      return {
+        ok: false,
+        message: "A captured face could not be matched to a unique center color. Try guided scan.",
+      }
+    }
+    faces.set(label, face)
+  }
+
+  const order = faceLetters("333")
+  const options = order.map((face) => {
+    const captured = faces.get(face)
+    return captured ? faceRotations333(captured) : []
+  })
+  if (options.some((rotations) => rotations.length !== 4)) {
+    return {
+      ok: false,
+      message: "One of the six center colors is missing. Show that face again or use guided scan.",
+    }
+  }
+
+  const validStates = new Set<string>()
+  const build = (index: number, selected: string[]): void => {
+    if (validStates.size > 1) return
+    if (index === options.length) {
+      const candidate = selected.join("")
+      if (validateFacelets("333", candidate).ok) validStates.add(candidate)
+      return
+    }
+    for (const rotation of options[index]) {
+      selected.push(rotation)
+      build(index + 1, selected)
+      selected.pop()
+      if (validStates.size > 1) return
+    }
+  }
+  build(0, [])
+
+  if (validStates.size === 1) return { ok: true, facelets: [...validStates][0] }
+  return {
+    ok: false,
+    message:
+      validStates.size === 0
+        ? "Those six faces do not form a solvable cube state. Check the lighting and scan again."
+        : "The camera found more than one possible face orientation. Use guided scan for this cube.",
+  }
+}

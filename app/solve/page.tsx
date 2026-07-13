@@ -5,11 +5,10 @@ import { Camera, Keyboard, Loader2, ScanLine, Sparkles } from "lucide-react"
 import { Navigation } from "@/components/navigation"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { ScanFlow } from "@/components/scanner/scan-flow"
+import { ScanFlow, type ScanCapture, type ScanMode } from "@/components/scanner/scan-flow"
 import { ColorReview } from "@/components/scanner/color-review"
 import { SolutionPlayer } from "@/components/solution-player"
-import { classifyScan } from "@/lib/scanner/classify"
-import type { RGB } from "@/lib/scanner/sampling"
+import { classifyFreeScan333, classifyScan } from "@/lib/scanner/classify"
 import {
   faceletCount,
   faceLetters,
@@ -39,6 +38,8 @@ export default function SolvePage() {
   const [step, setStep] = useState<Step>("pick")
   const [facelets, setFacelets] = useState("")
   const [cameraMessage, setCameraMessage] = useState<string | null>(null)
+  const [scanNotice, setScanNotice] = useState<string | null>(null)
+  const [scanMode, setScanMode] = useState<ScanMode>("free-333")
   const [solving, setSolving] = useState(false)
   const [solveError, setSolveError] = useState<string | null>(null)
   const [solution, setSolution] = useState<string | null>(null)
@@ -52,19 +53,32 @@ export default function SolvePage() {
   const startScan = (id: SolvablePuzzleId) => {
     setPuzzle(id)
     setCameraMessage(null)
+    setScanNotice(null)
+    setScanMode(id === "333" ? "free-333" : "guided")
     setStep("scan")
   }
 
   const startManual = (id: SolvablePuzzleId) => {
     setPuzzle(id)
     setCameraMessage(null)
+    setScanNotice(null)
     setFacelets(solvedFacelets(id))
     setStep("review")
   }
 
   const handleScanComplete = useCallback(
-    (faceSamples: RGB[][]) => {
-      setFacelets(classifyScan(puzzle, faceSamples))
+    (capture: ScanCapture) => {
+      if (capture.mode === "free-333") {
+        const result = classifyFreeScan333(capture.faceSamples)
+        if (!result.ok) {
+          setScanMode("guided")
+          setScanNotice(`${result.message} Automatic guided scan is ready instead.`)
+          return
+        }
+        setFacelets(result.facelets)
+      } else {
+        setFacelets(classifyScan(puzzle, capture.faceSamples))
+      }
       setStep("review")
     },
     [puzzle],
@@ -73,6 +87,7 @@ export default function SolvePage() {
   const handleCameraError = useCallback(
     (message: string) => {
       setCameraMessage(message)
+      setScanNotice(null)
       setFacelets(solvedFacelets(puzzle))
       setStep("review")
     },
@@ -109,6 +124,8 @@ export default function SolvePage() {
     setSolution(null)
     setSolveError(null)
     setCameraMessage(null)
+    setScanNotice(null)
+    setScanMode("free-333")
   }
 
   return (
@@ -151,9 +168,16 @@ export default function SolvePage() {
         {step === "scan" && (
           <Card className="p-4 sm:p-6">
             <ScanFlow
+              key={`${puzzle}-${scanMode}`}
               puzzle={puzzle}
+              mode={scanMode}
               onComplete={handleScanComplete}
               onCameraError={handleCameraError}
+              onModeChange={(nextMode) => {
+                setScanMode(nextMode)
+                setScanNotice("Guided scan will capture each face automatically in a reliable order.")
+              }}
+              notice={scanNotice}
             />
             <div className="mt-4 text-center">
               <Button variant="ghost" size="sm" onClick={reset}>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { classifyScan } from "@/lib/scanner/classify"
+import { classifyFreeScan333, classifyScan } from "@/lib/scanner/classify"
 import { faceLetters, type SolvablePuzzleId } from "@/lib/solver/state-mapping"
 import { validateFacelets } from "@/lib/solver/validate"
 import { NxnCube } from "@/lib/puzzle/nxn"
@@ -68,6 +68,14 @@ function nxnScanSamples(n: number, puzzle: SolvablePuzzleId, alg: string, seed: 
   return { samples, expected }
 }
 
+function rotate3x3Samples(face: RGB[], turns: number): RGB[] {
+  let result = face
+  for (let turn = 0; turn < turns; turn++) {
+    result = [6, 3, 0, 7, 4, 1, 8, 5, 2].map((index) => result[index])
+  }
+  return result
+}
+
 function pyraminxScanSamples(alg: string, seed: number): { samples: RGB[][]; expected: string } {
   const rng = mulberry32(seed)
   const p = PyraminxPuzzle.solved()
@@ -125,6 +133,21 @@ describe("classifyScan", () => {
       const result = validateFacelets(puzzle, classifyScan(puzzle, samples))
       expect(result.ok, puzzle).toBe(true)
     }
+  })
+
+  it("3x3: rebuilds a freely captured scan with shuffled, rotated faces", () => {
+    const { samples, expected } = nxnScanSamples(
+      3,
+      "333",
+      "R U R' U' F2 L D' B U2 R' D L2 F' U B2",
+      7,
+    )
+    const freeOrder = [2, 5, 0, 4, 1, 3]
+    const freeSamples = freeOrder.map((faceIndex, index) => rotate3x3Samples(samples[faceIndex], index))
+
+    const result = classifyFreeScan333(freeSamples)
+    expect(result.ok).toBe(true)
+    if (result.ok) expect(result.facelets).toBe(expected)
   })
 
   it("solved-color counts per face letter are balanced after classification", () => {
