@@ -2,9 +2,7 @@
 
 **Live:** <https://cv.siv19.dev> · [The story behind it](https://cv.siv19.dev/about)
 
-In December 2012 I saved a file called `Moves.png` — a picture of the notation, because I kept forgetting which way `R'` went. Once I could solve a cube, people asked me to teach them, so I made a slide deck. Then a better deck. Then a PDF, because not everyone could open a `.ppt`. I've taught at least **60 people** to solve a Rubik's Cube that way, one at a time, over more than a decade. ([The originals are still in Drive.](https://drive.google.com/drive/folders/0B3LEx1FbxlAmZ01PQm9YSkZjbHM?resourcekey=0-EfI_49dbt65TaxYl4VFDeQ&usp=sharing))
-
-CuberVerse is that deck, finally built properly — learn algorithms, scan and solve a real cube, practice with a timer, and track your progress.
+Learn Rubik's Cube algorithms, scan and solve a real cube with your camera, practice with a timer, and track your progress — all in the browser.
 
 ## Features
 
