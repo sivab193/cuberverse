@@ -12,6 +12,7 @@ CuberVerse is that deck, finally built properly — learn algorithms, scan and s
 - **Timer** — hold-space-to-start timer with auto-generated scrambles for 2x2, 3x3, and Pyraminx, plus Ao5/Ao12 session stats.
 - **Notation Guide** — interactive guide with a 3D cube that animates each move as you click it.
 - **Scan & Solve** — show a scrambled 3x3, 2x2, or Pyraminx to your camera (or enter the colors by hand) and get a shortest-path solution played back on the 3D puzzle. All processing happens in your browser; no photos are uploaded. The camera needs a secure context (HTTPS or localhost).
+- **WCA Profile** (`/wca`) — my own official WCA record, rendered server-side from the public WCA API on an hourly revalidate: every personal best with national rankings, and every competition I've entered. Eight of them; no medals.
 - **WCA Integration** — connect your World Cube Association account (via WCA OAuth — you sign in on worldcubeassociation.org) to see your official personal records, rankings, and medals on the dashboard, and browse upcoming WCA competitions in your country (filterable by city/state). Uses the public WCA API directly from the browser; only your WCA ID is stored.
 - **Stats & Dashboard** — solve history, progression charts, distributions, and per-algorithm progress (requires an account).
 

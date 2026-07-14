@@ -9,6 +9,12 @@
 
 const WCA_API = "https://www.worldcubeassociation.org/api/v0"
 
+/**
+ * The site owner's WCA ID. Drives the public /wca page — unlike the dashboard
+ * card, which shows whichever profile the *signed-in visitor* has linked.
+ */
+export const OWNER_WCA_ID = "2017BALA04"
+
 export const WCA_ID_PATTERN = /^\d{4}[A-Z]{4}\d{2}$/
 
 export function isValidWcaId(id: string): boolean {
@@ -206,6 +212,40 @@ export function fetchWcaPerson(wcaId: string): Promise<WcaPersonInfo> {
     promise.catch(() => personCache.delete(id))
   }
   return promise
+}
+
+/**
+ * Server-side variant for the public /wca page.
+ *
+ * `fetchWcaPerson`'s Map cache lives for the process lifetime, which is right
+ * in a browser tab but would pin a rendered-once server page to stale results
+ * forever. This leans on Next's fetch cache instead, so the page re-renders
+ * with fresh records on its revalidation interval.
+ */
+export async function fetchWcaPersonIsr(
+  wcaId: string,
+  revalidate = 3600,
+): Promise<WcaPersonInfo> {
+  const res = await fetch(`${WCA_API}/persons/${encodeURIComponent(wcaId.trim().toUpperCase())}`, {
+    headers: { Accept: "application/json" },
+    next: { revalidate },
+  })
+  if (!res.ok) throw new Error(`WCA API error ${res.status}`)
+  return (await res.json()) as WcaPersonInfo
+}
+
+/** Every competition a person has competed in, oldest first. */
+export async function fetchWcaPersonCompetitionsIsr(
+  wcaId: string,
+  revalidate = 3600,
+): Promise<WcaCompetition[]> {
+  const res = await fetch(
+    `${WCA_API}/persons/${encodeURIComponent(wcaId.trim().toUpperCase())}/competitions`,
+    { headers: { Accept: "application/json" }, next: { revalidate } },
+  )
+  if (!res.ok) throw new Error(`WCA API error ${res.status}`)
+  const competitions = (await res.json()) as WcaCompetition[]
+  return competitions.sort((a, b) => a.start_date.localeCompare(b.start_date))
 }
 
 let countriesCache: Promise<WcaCountry[]> | null = null

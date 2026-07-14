@@ -15,6 +15,7 @@ import {
   Book,
   ScanLine,
   Trophy,
+  Medal,
   Heart,
   Menu,
   X,
@@ -29,6 +30,7 @@ const PUBLIC_LINKS = [
   { href: "/notation", label: "Notation", icon: Book },
   { href: "/solve", label: "Solver", icon: ScanLine },
   { href: "/competitions", label: "Competitions", icon: Trophy },
+  { href: "/wca", label: "WCA", icon: Medal },
   { href: "/about", label: "About", icon: Heart },
 ]
 
@@ -109,22 +111,21 @@ export function Navigation() {
           <span className="text-lg font-bold sm:text-xl">CuberVerse</span>
         </Link>
 
-        {/* Full nav only once seven links + the auth button genuinely fit.
-            Icons come back at xl, where there's room for them. */}
-        <div className="hidden items-center gap-4 lg:flex xl:gap-6">
-          {links.map(({ href, label, icon: Icon }) => (
+        {/* Nine links (signed in) + the auth button only genuinely fit at xl,
+            and only without icons — the icons stay for the mobile panel. */}
+        <div className="hidden items-center gap-4 xl:flex">
+          {links.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="whitespace-nowrap text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              <Icon className="hidden h-4 w-4 xl:block" />
               {label}
             </Link>
           ))}
         </div>
 
-        <div className="hidden lg:block">{authControl()}</div>
+        <div className="hidden xl:block">{authControl()}</div>
 
         <button
           type="button"
@@ -132,7 +133,7 @@ export function Navigation() {
           aria-expanded={open}
           aria-controls="mobile-menu"
           aria-label={open ? "Close menu" : "Open menu"}
-          className="-mr-1 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground lg:hidden"
+          className="-mr-1 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground xl:hidden"
         >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
@@ -142,13 +143,13 @@ export function Navigation() {
         <>
           {/* Sits inside the nav's stacking context, so the panel stays above it. */}
           <div
-            className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+            className="fixed inset-0 z-40 bg-black/50 xl:hidden"
             aria-hidden="true"
             onClick={() => setOpen(false)}
           />
           <div
             id="mobile-menu"
-            className="absolute inset-x-0 top-full z-50 max-h-[calc(100dvh-4rem)] overflow-y-auto border-b border-border bg-card shadow-xl lg:hidden"
+            className="absolute inset-x-0 top-full z-50 max-h-[calc(100dvh-4rem)] overflow-y-auto border-b border-border bg-card shadow-xl xl:hidden"
           >
             <div className="space-y-1 px-4 py-3">
               {links.map(({ href, label, icon: Icon }) => (

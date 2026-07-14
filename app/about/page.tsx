@@ -2,14 +2,9 @@ import Link from "next/link"
 import { Navigation } from "@/components/navigation"
 import { Button } from "@/components/ui/button"
 import { algorithms } from "@/lib/algorithms"
-import {
-  ArrowRight,
-  BookOpen,
-  ExternalLink,
-  FileText,
-  Image as ImageIcon,
-  Presentation,
-} from "lucide-react"
+import { ArrowRight, BookOpen, FileText, Image as ImageIcon, Presentation } from "lucide-react"
+import { DetailList } from "@/components/detail-list"
+import { OWNER_WCA_ID, fetchWcaPersonIsr } from "@/lib/wca"
 
 /**
  * Public link to the real Drive folder, or "" to hide the link entirely.
@@ -40,12 +35,22 @@ const OLD_FILES = [
 ]
 
 export const metadata = {
-  title: "About — CuberVerse",
+  title: "About",
   description:
-    "CuberVerse started in 2012 with a PNG of the moves, and 60+ people taught one deck at a time.",
+    "It started in 2012 with a PNG of the moves. I've taught 60+ people to solve a Rubik's Cube since — first from a slide deck, now from this.",
 }
 
-export default function AboutPage() {
+/** Records only change when a competition happens; an hour is plenty. */
+export const revalidate = 3600
+
+export default async function AboutPage() {
+  // Read the count from the WCA rather than hardcoding it, so the story can't
+  // quietly go stale after the next competition. Falls back to the count at
+  // time of writing if the API is unreachable.
+  const competitionCount = await fetchWcaPersonIsr(OWNER_WCA_ID)
+    .then((info) => info.competition_count)
+    .catch(() => 8)
+
   return (
     <div>
       <Navigation />
@@ -96,6 +101,13 @@ export default function AboutPage() {
             {" to solve a Rubik’s Cube that way. One at a time, from a slide deck, over more than a decade."}
           </p>
           <p>
+            I compete, too — {competitionCount} WCA competitions since 2017, from Tamil Nadu to
+            Illinois. I have never won a medal, and I go anyway. I&apos;m not fast enough to
+            podium and I&apos;ve made peace with that; a competition is a reason to travel, and a
+            room where everyone cares about the same strange thing. Turning up is the whole
+            point. <Link href="/wca" className="text-foreground underline decoration-primary/50 underline-offset-4 transition-colors hover:decoration-primary">The full record is here</Link>, medals column and all.
+          </p>
+          <p>
             CuberVerse is that deck, finally built properly. Every algorithm is drawn as the case it
             actually solves and plays back on a 3D cube, so nobody has to squint at a diagram and
             guess. It&apos;s the thing I wish I could have sent people in 2012.
@@ -103,11 +115,12 @@ export default function AboutPage() {
         </div>
 
         {/* ---------- Stats ---------- */}
-        <dl className="mt-14 grid grid-cols-3 gap-4 rounded-xl border border-border bg-card p-6 sm:gap-6 sm:p-8">
+        <dl className="mt-14 grid grid-cols-2 gap-6 rounded-xl border border-border bg-card p-6 sm:grid-cols-4 sm:p-8">
           {[
             { value: "2012", label: "Where it started", tint: "text-primary" },
             { value: "60+", label: "People taught", tint: "text-accent" },
-            { value: `${algorithms.length}`, label: "Algorithms now", tint: "text-chart-3" },
+            { value: `${competitionCount}`, label: "Competitions", tint: "text-chart-3" },
+            { value: `${algorithms.length}`, label: "Algorithms now", tint: "text-chart-5" },
           ].map(({ value, label, tint }) => (
             <div key={label}>
               <dd className={`text-2xl font-bold tabular-nums sm:text-4xl ${tint}`}>{value}</dd>
@@ -123,38 +136,20 @@ export default function AboutPage() {
             Still sitting in Drive, untouched. Every one of these taught somebody to solve a cube.
           </p>
 
-          <div className="mt-6 overflow-hidden rounded-xl border border-border bg-card">
-            <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3 sm:px-5">
-              <p className="truncate font-mono text-xs text-muted-foreground">
-                My Drive / Rubik&apos;s Old Stuff
-              </p>
-              {DRIVE_FOLDER_URL && (
-                <a
-                  href={DRIVE_FOLDER_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  Open the folder
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              )}
-            </div>
-            <ul className="divide-y divide-border">
-              {OLD_FILES.map(({ name, date, icon: Icon, note }) => (
-                <li
-                  key={name}
-                  className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-secondary/40 sm:gap-4 sm:px-5"
-                >
-                  <Icon className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-mono text-sm text-foreground">{name}</p>
-                    {note && <p className="mt-0.5 text-xs text-muted-foreground">{note}</p>}
-                  </div>
-                  <p className="shrink-0 text-xs tabular-nums text-muted-foreground">{date}</p>
-                </li>
-              ))}
-            </ul>
+          <div className="mt-6">
+            <DetailList
+              label="My Drive / Rubik's Old Stuff"
+              action={
+                DRIVE_FOLDER_URL ? { label: "Open the folder", href: DRIVE_FOLDER_URL } : undefined
+              }
+              items={OLD_FILES.map(({ name, date, icon, note }) => ({
+                id: name,
+                icon,
+                title: <span className="font-mono">{name}</span>,
+                note,
+                meta: date,
+              }))}
+            />
           </div>
         </section>
 
