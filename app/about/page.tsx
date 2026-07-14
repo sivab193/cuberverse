@@ -101,16 +101,28 @@ export default async function AboutPage() {
             {" to solve a Rubik’s Cube that way. One at a time, from a slide deck, over more than a decade."}
           </p>
           <p>
-            I compete, too — {competitionCount} WCA competitions since 2017, from Tamil Nadu to
-            Illinois. I have never won a medal, and I go anyway. I&apos;m not fast enough to
+            In 2016 my friend Rishi and I tried to make it bigger. We built{" "}
+            <span className="font-mono text-sm text-foreground">Oricube</span>{" "}
+            on one of those drag-and-drop website builders, back before I knew how to write a
+            line of code — his
+            half was origami, mine was the cube. We got about as far as writing up how to solve
+            the first layer before we both got lazy and let it die quietly. I&apos;ve looked for
+            it since; it&apos;s gone, and I&apos;m fairly sure we never finished it anyway.
+          </p>
+          <p>
+            I compete, too — {competitionCount}{" "}
+            WCA competitions since 2017, from Tamil Nadu to Illinois. I have never won a medal, and I go anyway. I&apos;m not fast enough to
             podium and I&apos;ve made peace with that; a competition is a reason to travel, and a
             room where everyone cares about the same strange thing. Turning up is the whole
             point. <Link href="/wca" className="text-foreground underline decoration-primary/50 underline-offset-4 transition-colors hover:decoration-primary">The full record is here</Link>, medals column and all.
           </p>
           <p>
-            CuberVerse is that deck, finally built properly. Every algorithm is drawn as the case it
-            actually solves and plays back on a 3D cube, so nobody has to squint at a diagram and
-            guess. It&apos;s the thing I wish I could have sent people in 2012.
+            It took two more years — and an interest in coding that finally clicked near the end
+            of 12th grade in 2018 — before I could build the thing Oricube was trying to be.
+            CuberVerse is that deck, and that abandoned website, finally built properly. Every
+            algorithm is drawn as the case it actually solves and plays back on a 3D cube, so
+            nobody has to squint at a diagram and guess. It&apos;s the thing I wish I could have
+            sent people in 2012.
           </p>
         </div>
 
