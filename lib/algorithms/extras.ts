@@ -10,7 +10,69 @@ import type { Algorithm } from "./schema"
  */
 
 export const beginnerAlgorithms: Algorithm[] = [
-  // --- 3x3 beginner method (legacy ids) ---
+  // --- 3x3 beginner method (legacy ids kept; earlier stages added so the
+  //     method reads as a complete path: cross → corners → middle → last layer) ---
+  {
+    id: "beginner-daisy",
+    name: "Daisy to Cross",
+    cubeType: "3x3",
+    method: "Beginners",
+    category: "Cross",
+    algorithm: "F2",
+    difficulty: 1,
+    description:
+      "Build a daisy — four white edges around the yellow center — then drop each one into place.",
+    recognition:
+      "A white edge sits on the top face and its other color matches the center below it. Turn that face twice.",
+  },
+  {
+    id: "beginner-cross-edge-up",
+    name: "Lift an Edge into the Daisy",
+    cubeType: "3x3",
+    method: "Beginners",
+    category: "Cross",
+    algorithm: "F",
+    difficulty: 1,
+    description: "Bring a white edge from the middle or bottom up to the yellow center.",
+    recognition:
+      "A white edge is anywhere but the top. Turn its face until the edge reaches the top — if the slot above is taken, turn U first.",
+  },
+  {
+    id: "beginner-corner-right",
+    name: "First Layer Corner (Right)",
+    cubeType: "3x3",
+    method: "Beginners",
+    category: "First Layer",
+    algorithm: "R U R' U'",
+    difficulty: 1,
+    description:
+      "The workhorse trigger. With the corner above its slot, repeat until the white sticker drops in.",
+    recognition:
+      "The white corner is in the top layer, directly above the slot it belongs in, on your right.",
+  },
+  {
+    id: "beginner-corner-left",
+    name: "First Layer Corner (Left)",
+    cubeType: "3x3",
+    method: "Beginners",
+    category: "First Layer",
+    algorithm: "L' U' L U",
+    difficulty: 1,
+    description: "Mirror of the right-hand trigger, for a corner above the left slot.",
+    recognition: "The white corner sits above its slot on your left.",
+  },
+  {
+    id: "beginner-corner-eject",
+    name: "Free a Stuck Corner",
+    cubeType: "3x3",
+    method: "Beginners",
+    category: "First Layer",
+    algorithm: "R U R'",
+    difficulty: 1,
+    description: "Pops a corner out of the bottom layer so you can re-insert it the right way up.",
+    recognition:
+      "A white corner is already in the bottom layer but twisted, or in the wrong slot entirely.",
+  },
   {
     id: "beginner-middle",
     name: "Second Layer — To Right Side",

@@ -3,41 +3,48 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Speed cubing theme with dark backgrounds and vibrant accents */
+/*
+ * Speed cubing theme: a cool near-black (a touch of blue in the neutrals,
+ * rather than flat gray) with an indigo primary and cyan accent.
+ *
+ * There is no theme toggle — <html> never gets the `dark` class — so :root is
+ * the theme the whole site actually renders with.
+ */
 :root {
-  --background: oklch(0.15 0 0);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.18 0 0);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.18 0 0);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.65 0.22 260);
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.25 0 0);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.25 0 0);
-  --muted-foreground: oklch(0.65 0 0);
-  --accent: oklch(0.55 0.25 180);
-  --accent-foreground: oklch(0.98 0 0);
-  --destructive: oklch(0.55 0.25 25);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.25 0 0);
-  --input: oklch(0.25 0 0);
-  --ring: oklch(0.65 0.22 260);
-  --chart-1: oklch(0.65 0.22 260);
-  --chart-2: oklch(0.55 0.25 180);
-  --chart-3: oklch(0.75 0.18 140);
-  --chart-4: oklch(0.55 0.25 25);
-  --chart-5: oklch(0.7 0.2 80);
-  --radius: 0.5rem;
-  --sidebar: oklch(0.18 0 0);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.65 0.22 260);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.25 0 0);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(0.25 0 0);
-  --sidebar-ring: oklch(0.65 0.22 260);
+  --background: oklch(0.145 0.012 265);
+  --foreground: oklch(0.98 0.005 265);
+  --card: oklch(0.195 0.014 265);
+  --card-foreground: oklch(0.98 0.005 265);
+  --popover: oklch(0.195 0.014 265);
+  --popover-foreground: oklch(0.98 0.005 265);
+  --primary: oklch(0.62 0.21 264);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.26 0.015 265);
+  --secondary-foreground: oklch(0.98 0.005 265);
+  --muted: oklch(0.26 0.015 265);
+  --muted-foreground: oklch(0.7 0.02 265);
+  --accent: oklch(0.72 0.16 195);
+  --accent-foreground: oklch(0.16 0.02 265);
+  --destructive: oklch(0.58 0.23 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.29 0.016 265);
+  --input: oklch(0.26 0.015 265);
+  --ring: oklch(0.62 0.21 264);
+  --success: oklch(0.7 0.17 155);
+  --chart-1: oklch(0.62 0.21 264);
+  --chart-2: oklch(0.72 0.16 195);
+  --chart-3: oklch(0.75 0.18 145);
+  --chart-4: oklch(0.58 0.23 25);
+  --chart-5: oklch(0.75 0.17 80);
+  --radius: 0.75rem;
+  --sidebar: oklch(0.195 0.014 265);
+  --sidebar-foreground: oklch(0.98 0.005 265);
+  --sidebar-primary: oklch(0.62 0.21 264);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.26 0.015 265);
+  --sidebar-accent-foreground: oklch(0.98 0.005 265);
+  --sidebar-border: oklch(0.29 0.016 265);
+  --sidebar-ring: oklch(0.62 0.21 264);
 }
 
 .dark {
@@ -78,6 +85,7 @@
 @theme inline {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --color-success: var(--success);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -122,5 +130,59 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  /* Anchors sit below the sticky filter bar, not underneath it. */
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 8rem;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Horizontal filter rows scroll on phones; the bar itself is the affordance. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Faint grid, fading out downward — page-header texture. */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, var(--border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: linear-gradient(to bottom, black, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, black, transparent);
+  }
+
+  /* The soft primary/accent bloom behind page headers. */
+  .bg-bloom {
+    background-image:
+      radial-gradient(60% 80% at 15% 0%, color-mix(in oklch, var(--primary) 22%, transparent), transparent 70%),
+      radial-gradient(50% 70% at 85% 10%, color-mix(in oklch, var(--accent) 14%, transparent), transparent 70%);
+  }
+
+  /* Recessed plate the case diagrams sit on. */
+  .bg-case {
+    background-image: radial-gradient(
+      75% 75% at 50% 30%,
+      color-mix(in oklch, var(--foreground) 7%, transparent),
+      transparent 100%
+    );
   }
 }

@@ -15,6 +15,7 @@ import {
   Book,
   ScanLine,
   Trophy,
+  Heart,
   Menu,
   X,
 } from "lucide-react"
@@ -28,6 +29,7 @@ const PUBLIC_LINKS = [
   { href: "/notation", label: "Notation", icon: Book },
   { href: "/solve", label: "Solver", icon: ScanLine },
   { href: "/competitions", label: "Competitions", icon: Trophy },
+  { href: "/about", label: "About", icon: Heart },
 ]
 
 const AUTHED_LINKS = [

@@ -1,11 +1,13 @@
 # CuberVerse
 
-Your complete speed cubing companion — practice with a timer, learn algorithms, master notation, and track your progress.
+Your complete speed cubing companion — learn algorithms, scan and solve a real cube, practice with a timer, and track your progress.
+
+**Live:** <https://cv.siv19.dev>
 
 ## Features
 
+- **Algorithm Library** — 417 algorithms across 3x3, 2x2, 4x4 and Pyraminx (Beginners, CFOP, one-handed, Ortega, CLL, EG-1, Reduction, L4E). Every case is **drawn as the state it solves** — the diagram is computed from the algorithm's inverse on the puzzle model in `lib/puzzle`, not stored as an image — and any case can be played back move-by-move on the 3D puzzle. Filter by puzzle, method, favorites and learning status; mark cases learning/learned as you go.
 - **Timer** — hold-space-to-start timer with auto-generated scrambles for 2x2, 3x3, and Pyraminx, plus Ao5/Ao12 session stats.
-- **Algorithm Library** — browse algorithms by cube type and method (Beginners, CFOP), copy them, and mark your learning progress.
 - **Notation Guide** — interactive guide with a 3D cube that animates each move as you click it.
 - **Scan & Solve** — show a scrambled 3x3, 2x2, or Pyraminx to your camera (or enter the colors by hand) and get a shortest-path solution played back on the 3D puzzle. All processing happens in your browser; no photos are uploaded. The camera needs a secure context (HTTPS or localhost).
 - **WCA Integration** — connect your World Cube Association account (via WCA OAuth — you sign in on worldcubeassociation.org) to see your official personal records, rankings, and medals on the dashboard, and browse upcoming WCA competitions in your country (filterable by city/state). Uses the public WCA API directly from the browser; only your WCA ID is stored.
@@ -19,6 +21,8 @@ Your complete speed cubing companion — practice with a timer, learn algorithms
 - [cubing.js](https://js.cubing.net/cubing/) for in-browser solving (two-phase 3x3, optimal 2x2/Pyraminx)
 - [Firebase](https://firebase.google.com/) (Auth + Firestore) for accounts, solves, and progress
 - [Vitest](https://vitest.dev/) for unit tests
+
+The puzzle model in `lib/puzzle` is the single source of truth for cube state: scrambles, the 3D viewer, the solver's input, and the algorithm-page case diagrams (`components/case-diagram.tsx`) all derive from it. Moves are integer rotations of exact sticker positions rather than hand-written cycle tables, so one code path covers 2x2–7x7 and the Pyraminx — and `lib/algorithms/__tests__/data-integrity.test.ts` mechanically proves every shipped algorithm honors its set's contract (a PLL only permutes the last layer, a Winter Variation alg only touches the last layer and the FR slot, and so on).
 
 > **Note:** `pnpm dev`/`pnpm build` first run `scripts/vendor-cubing.mjs`, which copies the cubing.js solver into `public/vendor/cubing` — its search workers must load un-bundled from our origin (bundlers break its module-worker instantiation). The copy is gitignored and regenerated on demand.
 

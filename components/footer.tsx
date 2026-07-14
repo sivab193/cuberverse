@@ -8,7 +8,7 @@ export function Footer() {
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-3 px-4 sm:px-6">
         <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
           <p className="text-center text-xs text-muted-foreground sm:text-sm">
-            Built with precision and robust multi-channel notification support
+            Built for cubers, by a cuber
           </p>
           <div className="flex items-center gap-3 text-sm">
             <a
