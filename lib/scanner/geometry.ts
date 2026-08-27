@@ -1,4 +1,4 @@
-import type { SolvablePuzzleId } from "@/lib/solver/state-mapping"
+import type { SolvablePuzzleId } from "../solver/state-mapping"
 
 /**
  * Face-scan geometry shared by the camera overlay, the sampler, and the

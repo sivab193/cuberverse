@@ -1,4 +1,4 @@
-import type { PuzzleId } from "@/lib/puzzle"
+import type { PuzzleId } from "../puzzle"
 
 /** Display names used across the UI, timer solves, and URL state. */
 export type CubeType = "2x2" | "3x3" | "4x4" | "5x5" | "6x6" | "7x7" | "pyraminx"

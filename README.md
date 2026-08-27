@@ -4,6 +4,8 @@
 
 Learn Rubik's Cube algorithms, scan and solve a real cube with your camera, practice with a timer, and track your progress — all in the browser.
 
+The new universal React Native/Expo app is in [`mobile/`](mobile/README.md). It runs on Android, iOS, and static web from one codebase, keeps its core features offline, and intentionally omits signup/account features for now.
+
 ## Features
 
 - **Algorithm Library** — 417 algorithms across 3x3, 2x2, 4x4 and Pyraminx (Beginners, CFOP, one-handed, Ortega, CLL, EG-1, Reduction, L4E). Every case is **drawn as the state it solves** — the diagram is computed from the algorithm's inverse on the puzzle model in `lib/puzzle`, not stored as an image — and any case can be played back move-by-move on the 3D puzzle. Filter by puzzle, method, favorites and learning status; mark cases learning/learned as you go.

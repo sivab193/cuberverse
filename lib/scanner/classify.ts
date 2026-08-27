@@ -1,8 +1,8 @@
-import { faceLetters, type SolvablePuzzleId } from "@/lib/solver/state-mapping"
-import { validateFacelets } from "@/lib/solver/validate"
-import { NxnCube } from "@/lib/puzzle/nxn"
-import { parseSequence } from "@/lib/puzzle/notation"
-import { FACE_ORDER } from "@/lib/puzzle/types"
+import { faceLetters, type SolvablePuzzleId } from "../solver/state-mapping"
+import { validateFacelets } from "../solver/validate"
+import { NxnCube } from "../puzzle/nxn"
+import { parseSequence } from "../puzzle/notation"
+import { FACE_ORDER } from "../puzzle/types"
 import type { RGB } from "./sampling"
 
 /**

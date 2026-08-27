@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "CuberVerse",
+    "slug": "cuberverse",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/cuberverse-icon.png",
+    "scheme": "cuberverse",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "icon": "./assets/images/cuberverse-icon.png",
+      "bundleIdentifier": "com.siv19.cuberverse"
+    },
+    "android": {
+      "package": "com.siv19.cuberverse",
+      "adaptiveIcon": {
+        "backgroundColor": "#17151f",
+        "foregroundImage": "./assets/images/cuberverse-icon.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/cuberverse-icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow CuberVerse to scan your puzzle. Photos stay on this device.",
+          "recordAudioAndroid": false,
+          "barcodeScannerEnabled": false
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#17151f",
+          "image": "./assets/images/cuberverse-icon.png",
+          "imageWidth": 180
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
