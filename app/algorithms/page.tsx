@@ -9,7 +9,7 @@ import { algorithms, CUBE_TYPE_TO_PUZZLE, type Algorithm, type CubeType, type Me
 import { AlgorithmDetailDialog } from "@/components/algorithm-detail-dialog"
 import { CaseDiagram } from "@/components/case-diagram"
 import { cn } from "@/lib/utils"
-import { Check, Copy, Play, Search, Sparkles, Star, X } from "lucide-react"
+import { Check, ChevronDown, Copy, Play, Search, Sparkles, Star, X } from "lucide-react"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth, db } from "@/lib/firebase"
 import { doc, setDoc, getDoc } from "firebase/firestore"
@@ -23,6 +23,7 @@ const CUBE_ORDER: CubeType[] = ["3x3", "2x2", "4x4", "5x5", "6x6", "7x7", "pyram
 
 const METHOD_ORDER: MethodType[] = [
   "Beginners",
+  "2-Look",
   "CFOP",
   "OH",
   "Ortega",
@@ -34,8 +35,7 @@ const METHOD_ORDER: MethodType[] = [
 
 /**
  * Solve order, so sections read as a path through the solve rather than as
- * data order. The beginner last layer ("Third Layer") comes before 2-Look
- * OLL/PLL, which are the step up from it.
+ * data order.
  */
 const CATEGORY_ORDER = [
   "Cross",
@@ -245,6 +245,14 @@ function AlgorithmsContent() {
     { key: "learned", label: "Learned", count: counts.learned },
   ]
 
+  const jumpToSection = (category: string) => {
+    const section = document.getElementById(sectionId(category))
+    if (!section) return
+    const panel = section.closest("details")
+    if (panel) panel.open = true
+    section.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
+
   return (
     <div>
       <Navigation />
@@ -370,46 +378,67 @@ function AlgorithmsContent() {
       {/* ---------- Results ---------- */}
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
         {sections.length > 0 ? (
-          sections.map(([category, groups]) => {
-            const total = [...groups.values()].reduce((n, list) => n + list.length, 0)
-            return (
-              <section key={category} className="mb-12 last:mb-0 sm:mb-16">
-                <div className="mb-5 flex items-baseline gap-3">
-                  <h2 className="text-xl font-bold tracking-tight sm:text-2xl">{category}</h2>
-                  <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
-                    {total}
-                  </span>
-                  <span className="h-px flex-1 bg-border" aria-hidden="true" />
-                </div>
+          <>
+            <nav aria-label="Jump to section" className="no-scrollbar mb-8 -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+              {sections.map(([category, groups]) => {
+                const total = [...groups.values()].reduce((n, list) => n + list.length, 0)
+                return (
+                  <button
+                    key={category}
+                    type="button"
+                    onClick={() => jumpToSection(category)}
+                    className="shrink-0 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {category} <span className="tabular-nums opacity-60">{total}</span>
+                  </button>
+                )
+              })}
+            </nav>
 
-                {[...groups.entries()].map(([group, groupAlgos]) => (
-                  <div key={group || "__ungrouped"} className="mb-8 last:mb-0">
-                    {group && (
-                      <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        {group}
-                      </h3>
-                    )}
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                      {groupAlgos.map((algo) => (
-                        <AlgorithmCard
-                          key={algo.id}
-                          algo={algo}
-                          status={algoProgress[algo.id]}
-                          favorite={favorites.has(algo.id)}
-                          signedIn={Boolean(user)}
-                          copied={copiedId === algo.id}
-                          onOpen={() => setDetail(algo)}
-                          onCopy={() => copyToClipboard(algo.algorithm, algo.id)}
-                          onFavorite={() => toggleFavorite(algo.id)}
-                          onCycleProgress={() => cycleProgress(algo.id)}
-                        />
-                      ))}
-                    </div>
+            {sections.map(([category, groups]) => {
+              const total = [...groups.values()].reduce((n, list) => n + list.length, 0)
+              return (
+                <details key={category} open className="group mb-4 rounded-xl border border-border bg-card last:mb-0">
+                  <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-4 marker:content-none sm:px-5">
+                    <ChevronDown className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
+                    <h2 id={sectionId(category)} className="text-xl font-bold tracking-tight sm:text-2xl">{category}</h2>
+                    <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+                      {total}
+                    </span>
+                    <span className="h-px flex-1 bg-border" aria-hidden="true" />
+                  </summary>
+
+                  <div className="border-t border-border/70 px-4 py-5 sm:px-5">
+                    {[...groups.entries()].map(([group, groupAlgos]) => (
+                      <div key={group || "__ungrouped"} className="mb-8 last:mb-0">
+                        {group && (
+                          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                            {group}
+                          </h3>
+                        )}
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                          {groupAlgos.map((algo) => (
+                            <AlgorithmCard
+                              key={algo.id}
+                              algo={algo}
+                              status={algoProgress[algo.id]}
+                              favorite={favorites.has(algo.id)}
+                              signedIn={Boolean(user)}
+                              copied={copiedId === algo.id}
+                              onOpen={() => setDetail(algo)}
+                              onCopy={() => copyToClipboard(algo.algorithm, algo.id)}
+                              onFavorite={() => toggleFavorite(algo.id)}
+                              onCycleProgress={() => cycleProgress(algo.id)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </section>
-            )
-          })
+                </details>
+              )
+            })}
+          </>
         ) : (
           <div className="rounded-xl border border-dashed border-border py-20 text-center">
             <p className="text-base font-medium">No cases here</p>
@@ -440,6 +469,10 @@ function AlgorithmsContent() {
       <AlgorithmDetailDialog algorithm={detail} onOpenChange={(open) => !open && setDetail(null)} />
     </div>
   )
+}
+
+function sectionId(category: string) {
+  return `section-${category.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`
 }
 
 function Stat({
