@@ -262,7 +262,7 @@ export interface CompetitionsPage {
   hasMore: boolean
 }
 
-const COMPS_PER_PAGE = 25
+const COMPS_PER_PAGE = 100
 
 /** Upcoming (and ongoing) competitions in a country, soonest first. */
 export async function fetchUpcomingCompetitions(

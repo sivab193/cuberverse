@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { CalendarDays, ExternalLink, Loader2, MapPin, Search, Users } from "lucide-react"
+import { CalendarDays, ExternalLink, Loader2, MapPin, Search, Users, X } from "lucide-react"
 import { Navigation } from "@/components/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -18,6 +18,16 @@ import { useAuthState } from "react-firebase-hooks/auth"
 import { auth } from "@/lib/firebase"
 import { fetchUserProfile, updateUserProfile } from "@/lib/user-profile"
 import {
+  appendCompetitionsPage,
+  citiesFromCompetitions,
+  filterCompetitions,
+  hasActiveFilters,
+  loadStoredFilters,
+  REGISTRATION_FILTER_LABELS,
+  saveStoredFilters,
+  type RegistrationFilter,
+} from "@/lib/competition-filters"
+import {
   countryFlag,
   eventName,
   fetchUpcomingCompetitions,
@@ -29,6 +39,8 @@ import {
 } from "@/lib/wca"
 
 const COUNTRY_STORAGE_KEY = "cuberverse.competitions.country"
+// Radix Select items need a non-empty value, so "all cities" gets a sentinel.
+const ALL_CITIES = "__all__"
 
 function RegistrationBadge({ comp }: { comp: WcaCompetition }) {
   if (comp.cancelled_at) return <Badge variant="outline">Cancelled</Badge>
@@ -63,7 +75,7 @@ function CompetitionCard({ comp }: { comp: WcaCompetition }) {
         <p className="flex items-start gap-2">
           <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
           <span className="min-w-0 break-words">
-            {comp.city} — {comp.venue.replace(/\[|\]|\(.*?\)/g, "")}
+            {comp.city} — {(comp.venue ?? "").replace(/\[|\]|\(.*?\)/g, "")}
           </span>
         </p>
         {comp.competitor_limit && (
@@ -100,12 +112,15 @@ export default function CompetitionsPage() {
   const [countries, setCountries] = useState<WcaCountry[]>([])
   const [country, setCountry] = useState<string>("")
   const [competitions, setCompetitions] = useState<WcaCompetition[]>([])
-  const [page, setPage] = useState(1)
-  const [hasMore, setHasMore] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [allLoaded, setAllLoaded] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [filter, setFilter] = useState("")
+  const [city, setCity] = useState("")
+  const [registration, setRegistration] = useState<RegistrationFilter>("all")
   const requestSeq = useRef(0)
+  const firstSave = useRef(true)
 
   useEffect(() => {
     fetchWcaCountries().then(setCountries).catch(() => setError("Couldn't load the country list from the WCA API."))
@@ -134,48 +149,101 @@ export default function CompetitionsPage() {
     }
   }, [user])
 
-  const loadPage = useCallback(
-    async (iso2: string, pageNumber: number, append: boolean) => {
-      const seq = ++requestSeq.current
-      setLoading(true)
-      setError(null)
-      try {
+  // Restore saved filters once on mount (localStorage isn't available during SSR).
+  useEffect(() => {
+    const stored = loadStoredFilters()
+    setCity(stored.city)
+    setRegistration(stored.registration)
+    setFilter(stored.query)
+  }, [])
+
+  // Persist filters on every change. The first run is skipped so the mount
+  // pass doesn't overwrite the stored values before the restore above lands.
+  useEffect(() => {
+    if (firstSave.current) {
+      firstSave.current = false
+      return
+    }
+    saveStoredFilters({ city, registration, query: filter })
+  }, [city, registration, filter])
+
+  // Loads every page for the country, one after another, so search and
+  // filters run across all competitions — never just the first page.
+  // The first page shows as soon as it arrives; later pages stream in
+  // behind it (loadingMore) with no button to click.
+  const loadAll = useCallback(async (iso2: string) => {
+    const seq = ++requestSeq.current
+    setLoading(true)
+    setLoadingMore(false)
+    setAllLoaded(false)
+    setError(null)
+    try {
+      let pageNumber = 1
+      for (;;) {
         const result = await fetchUpcomingCompetitions(iso2, pageNumber)
         if (seq !== requestSeq.current) return
-        setCompetitions((prev) => (append ? [...prev, ...result.competitions] : result.competitions))
-        setHasMore(result.hasMore)
-        setPage(pageNumber)
-      } catch {
-        if (seq === requestSeq.current) setError("Couldn't load competitions from the WCA API — try again in a moment.")
-      } finally {
-        if (seq === requestSeq.current) setLoading(false)
+        setCompetitions((prev) => appendCompetitionsPage(prev, result.competitions))
+        if (!result.hasMore) break
+        pageNumber += 1
+        // First page is in — switch to the quieter "loading more" line.
+        setLoading(false)
+        setLoadingMore(true)
       }
-    },
-    [],
-  )
+      if (seq === requestSeq.current) setAllLoaded(true)
+    } catch {
+      if (seq === requestSeq.current) setError("Couldn't load competitions from the WCA API — try again in a moment.")
+    } finally {
+      if (seq === requestSeq.current) {
+        setLoading(false)
+        setLoadingMore(false)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     if (!country) return
     setCompetitions([])
-    void loadPage(country, 1, false)
-  }, [country, loadPage])
+    void loadAll(country)
+  }, [country, loadAll])
 
   const changeCountry = (iso2: string) => {
     setCountry(iso2)
+    // Cities belong to a country — a saved city from another country is meaningless.
+    setCity("")
     localStorage.setItem(COUNTRY_STORAGE_KEY, iso2)
     if (user) void updateUserProfile(user.uid, { countryIso2: iso2 }).catch(() => {})
   }
 
-  const visible = useMemo(() => {
-    const needle = filter.trim().toLowerCase()
-    if (!needle) return competitions
-    return competitions.filter(
-      (comp) =>
-        comp.name.toLowerCase().includes(needle) ||
-        comp.city.toLowerCase().includes(needle) ||
-        comp.venue.toLowerCase().includes(needle),
-    )
-  }, [competitions, filter])
+  const cities = useMemo(() => citiesFromCompetitions(competitions), [competitions])
+
+  // Keep the selected city in the list even if it only appears on a later
+  // page — otherwise the select would show a blank value until Load more.
+  const cityOptions = useMemo(() => {
+    if (!city || cities.includes(city)) return cities
+    return [...cities, city].sort((a, b) => a.localeCompare(b))
+  }, [cities, city])
+
+  const filtersActive = hasActiveFilters({ city, registration, query: filter })
+
+  const clearFilters = () => {
+    setCity("")
+    setRegistration("all")
+    setFilter("")
+  }
+
+  const visible = useMemo(
+    () => filterCompetitions(competitions, { city, registration, query: filter }),
+    [competitions, city, registration, filter],
+  )
+
+  const activeFilterParts = useMemo(() => {
+    const parts: string[] = []
+    if (city) parts.push(`in ${city}`)
+    if (registration !== "all") parts.push(REGISTRATION_FILTER_LABELS[registration].toLowerCase())
+    const needle = filter.trim()
+    if (needle) parts.push(`matching “${needle}”`)
+    return parts
+  }, [city, registration, filter])
 
   return (
     <div>
@@ -185,8 +253,9 @@ export default function CompetitionsPage() {
         <div className="mb-6 sm:mb-8">
           <h1 className="mb-3 text-3xl font-bold sm:text-4xl">Competitions</h1>
           <p className="text-base text-muted-foreground sm:text-lg">
-            Upcoming WCA competitions near you — pick your country, then filter by city or state
-            to find ones you can attend.
+            Upcoming WCA competitions near you — pick your country, then filter by city,
+            registration status, or search to find ones you can attend. Your filters are
+            saved in this browser for next time.
           </p>
         </div>
 
@@ -216,6 +285,56 @@ export default function CompetitionsPage() {
           </div>
         </div>
 
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Select
+            value={city || ALL_CITIES}
+            onValueChange={(value) => setCity(value === ALL_CITIES ? "" : value)}
+            disabled={competitions.length === 0}
+          >
+            <SelectTrigger className="w-full sm:w-64">
+              <SelectValue placeholder="All cities" />
+            </SelectTrigger>
+            <SelectContent className="max-h-80">
+              <SelectItem value={ALL_CITIES}>All cities</SelectItem>
+              {cityOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={registration}
+            onValueChange={(value) => setRegistration(value as RegistrationFilter)}
+            disabled={competitions.length === 0}
+          >
+            <SelectTrigger className="w-full sm:w-64">
+              <SelectValue placeholder="Any registration status" />
+            </SelectTrigger>
+            <SelectContent>
+              {(Object.keys(REGISTRATION_FILTER_LABELS) as RegistrationFilter[]).map((status) => (
+                <SelectItem key={status} value={status}>
+                  {REGISTRATION_FILTER_LABELS[status]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {filtersActive && (
+            <Button variant="ghost" onClick={clearFilters} className="sm:ml-auto">
+              <X className="mr-2 h-4 w-4" />
+              Clear filters
+            </Button>
+          )}
+        </div>
+
+        {filtersActive && competitions.length > 0 && (
+          <p className="mb-4 text-sm text-muted-foreground">
+            Showing {visible.length} of {competitions.length}{" "}
+            {competitions.length === 1 ? "competition" : "competitions"}
+            {!allLoaded && " loaded so far"}
+          </p>
+        )}
+
         {error && (
           <p className="mb-6 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm">
             {error}
@@ -238,7 +357,7 @@ export default function CompetitionsPage() {
 
         {country && visible.length === 0 && competitions.length > 0 && (
           <Card className="p-8 text-center text-muted-foreground">
-            No competitions match “{filter}”.
+            No competitions match {activeFilterParts.join(", ")}.
           </Card>
         )}
 
@@ -254,11 +373,9 @@ export default function CompetitionsPage() {
           </div>
         )}
 
-        {!loading && hasMore && (
-          <div className="mt-6 flex justify-center">
-            <Button variant="outline" onClick={() => loadPage(country, page + 1, true)}>
-              Load more
-            </Button>
+        {loadingMore && (
+          <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading more competitions…
           </div>
         )}
       </main>
